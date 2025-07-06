@@ -9,7 +9,7 @@ const VAT_RATE = 0.21; // 21% VAT in CZ
 const WORK_HOURS_START = 9;
 const WORK_HOURS_END = 17;
 
-// simple list of Czech public holidays (YYYY-MM-DD)
+// simple list of czech public holidays (YYYY-MM-DD)
 function getCzechHolidays(year: number): string[] {
     return [
         `${year}-01-01`, // Nový rok
@@ -26,13 +26,18 @@ function getCzechHolidays(year: number): string[] {
     ];
 }
 
+// helper function to get local ISO date string (YYYY-MM-DD)
+function toLocalISO(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
 // returns the number of working days in a month
 function getWorkingDaysInMonth(year: number, month: number, holidays: string[]): number {
     let count = 0;
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
-        const iso = date.toISOString().slice(0, 10);
+        const iso = toLocalISO(date);
         const isWeekend = date.getDay() === 0 || date.getDay() === 6;
         const isHoliday = holidays.includes(iso);
         if (!isWeekend && !isHoliday) count++;
@@ -45,7 +50,7 @@ function isEarningTime(now: Date, holidays: string[]): boolean {
     const hour = now.getHours();
     const isWorkHour = hour >= WORK_HOURS_START && hour < WORK_HOURS_END;
     const isWeekend = now.getDay() === 0 || now.getDay() === 6;
-    const iso = now.toISOString().slice(0, 10);
+    const iso = toLocalISO(now);
     const isHoliday = holidays.includes(iso);
     return isWorkHour && !isWeekend && !isHoliday;
 }
@@ -60,7 +65,7 @@ function getCurrentEarnings(now: Date, workingDays: number, holidays: string[]):
     let day = new Date(startOfMonth);
 
     while (day < today) {
-        const iso = day.toISOString().slice(0, 10);
+        const iso = toLocalISO(day);
         const isWeekend = day.getDay() === 0 || day.getDay() === 6;
         const isHoliday = holidays.includes(iso);
         if (!isWeekend && !isHoliday) {
@@ -69,8 +74,8 @@ function getCurrentEarnings(now: Date, workingDays: number, holidays: string[]):
         day.setDate(day.getDate() + 1);
     }
 
-    // For today - only if it is a working day and within working hours
-    const isoToday = today.toISOString().slice(0, 10);
+    // for today - only if it is a working day and within working hours
+    const isoToday = toLocalISO(today);
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
     const isHoliday = holidays.includes(isoToday);
     if (!isWeekend && !isHoliday) {
@@ -95,13 +100,12 @@ function getEarningsWithVAT(earnings: number): number {
 // route for earnings API endpoint
 router.get("/api/earnings", (req, res) => {
     const now = new Date();
-    //const now = new Date("2025-07-01T15:01:00.000Z"); // temporary set fake datetime for testing
     const year = now.getFullYear();
     const month = now.getMonth(); // 0-based
-    const yearMonthStr = `${year}-${String(month + 1).padStart(2, "0")}`;  // e.g. "2025-06"
+    const isoToday = toLocalISO(now);
     const isWeekend = now.getDay() === 0 || now.getDay() === 6;
     const holidays = getCzechHolidays(year);
-    const isHoliday = holidays.includes(now.toISOString().slice(0, 10));
+    const isHoliday = holidays.includes(isoToday);
     const earningTime = isEarningTime(now, holidays);
     const workingDaysInMonth = getWorkingDaysInMonth(year, month, holidays);
     const currentEarnings = getCurrentEarnings(now, workingDaysInMonth, holidays);
@@ -118,8 +122,8 @@ router.get("/api/earnings", (req, res) => {
             workHoursEnd: WORK_HOURS_END,
         },
         calendar: {
-            now: now.toLocaleString("cs-CZ"),
-            yearMonthStr: yearMonthStr,
+            now: now,
+            isoToday: isoToday,
             isWeekend: isWeekend,
             isHoliday: isHoliday,
             isEarningTime: earningTime,
