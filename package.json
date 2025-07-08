@@ -5,8 +5,9 @@
     "main": "index.js",
     "scripts": {
         "dev": "ts-node-dev --respawn src/index.ts",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "tsc",
+        "test": "vitest run",
+        "test:watch": "vitest --watch",
+        "build": "npm run test && tsc",
         "start": "node dist/index.js"
     },
     "keywords": [],
@@ -24,6 +25,7 @@
         "@types/node": "^24.0.10",
         "eslint": "^9.30.1",
         "ts-node-dev": "^2.0.0",
-        "typescript": "^5.8.3"
+        "typescript": "^5.8.3",
+        "vitest": "^3.2.4"
     }
 }
