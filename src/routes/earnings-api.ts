@@ -5,27 +5,28 @@ import Holidays from "date-holidays";
 const router = Router();
 
 // personal settings
-const MANDAY_RATE = 7600;
-const CURRENCY = "CZK";
-const VAT_RATE = 0.21; // 21% VAT
-const COUNTRY = "CZ"; // user's country (for holidays)
-const TIME_ZONE = "Europe/Prague"; // user's time zone
-const WORK_HOURS_START = 9;
-const WORK_HOURS_END = 17;
+export const MANDAY_RATE = 7600;
+export const CURRENCY = "CZK";
+export const VAT_RATE = 0.21; // 21% VAT
+export const COUNTRY = "CZ"; // user's country (for holidays)
+export const TIME_ZONE = "Europe/Prague"; // user's time zone
+export const WORK_HOURS_START = 9;
+export const WORK_HOURS_END = 17;
 
 // returns true if the date is a weekend
-function getIsWeekend(now: Date): boolean {
+export function getIsWeekend(now: Date): boolean {
     return now.getDay() === 0 || now.getDay() === 6;
 }
 
 // returns true if the date is a public holiday
-function getIsHoliday(now: Date): boolean {
+export function getIsHoliday(now: Date): boolean {
     const holidays = new Holidays(COUNTRY);
-    return holidays.isHoliday(now) ? true : false; // may return Holiday[] or false
+    const todayHolidays = holidays.isHoliday(now);
+    return todayHolidays ? todayHolidays.some(holiday => holiday.type === "public") : false;
 }
 
 // returns true if the current time is within earning hours
-function getIsEarningTime(now: Date): boolean {
+export function getIsEarningTime(now: Date): boolean {
     const hour = now.getHours();
     const isWorkHour = hour >= WORK_HOURS_START && hour < WORK_HOURS_END;
     const isWeekend = getIsWeekend(now);
@@ -34,7 +35,7 @@ function getIsEarningTime(now: Date): boolean {
 }
 
 // returns the number of working days in a month
-function getWorkingDaysInMonth(now: Date): number {
+export function getWorkingDaysInMonth(now: Date): number {
     let count = 0;
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     for (let day = 1; day <= daysInMonth; day++) {
@@ -47,7 +48,7 @@ function getWorkingDaysInMonth(now: Date): number {
 }
 
 // calculates current earnings from the start of the month until now
-function getCurrentEarnings(now: Date): number {
+export function getCurrentEarnings(now: Date): number {
     let earnings = 0;
     const msPerHour = 1000 * 60 * 60;
     const year = now.getFullYear();
@@ -81,7 +82,7 @@ function getCurrentEarnings(now: Date): number {
 }
 
 // calculates earnings with VAT
-function getEarningsWithVAT(earnings: number): number {
+export function getEarningsWithVAT(earnings: number): number {
     return Math.floor(earnings * (1 + VAT_RATE));
 }
 

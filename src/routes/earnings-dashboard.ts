@@ -5,7 +5,7 @@ import path from "path";
 const router = Router();
 
 // route for earnings dashboard (homepage)
-router.get("/", (req, res) => {    
+router.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../../public/earnings-dashboard.html"));
 });
 
