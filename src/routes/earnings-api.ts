@@ -37,9 +37,9 @@ export function getIsEarningTime(now: Date): boolean {
 // returns the number of working days in a month
 export function getWorkingDaysInMonth(now: Date): number {
     let count = 0;
-    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const daysInMonth = new TZDate(new Date(now.getFullYear(), now.getMonth() + 1, 0), TIME_ZONE).getDate();
     for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(now.getFullYear(), now.getMonth(), day);
+        const date = new TZDate(new Date(now.getFullYear(), now.getMonth(), day), TIME_ZONE);
         const isWeekend = getIsWeekend(date);
         const isHoliday = getIsHoliday(date);
         if (!isWeekend && !isHoliday) count++;
@@ -53,10 +53,10 @@ export function getCurrentEarnings(now: Date): number {
     const msPerHour = 1000 * 60 * 60;
     const year = now.getFullYear();
     const month = now.getMonth();
-    const startOfMonth = new Date(year, month, 1, WORK_HOURS_START, 0, 0, 0);
-    const today = new Date(year, month, now.getDate());
-    let day = new Date(startOfMonth);
+    const startOfMonth = new TZDate(new Date(year, month, 1, WORK_HOURS_START, 0, 0, 0), TIME_ZONE);
+    const today = new TZDate(new Date(year, month, now.getDate()), TIME_ZONE);
 
+    let day = new TZDate(new Date(startOfMonth), TIME_ZONE);
     while (day < today) {
         const isWeekend = getIsWeekend(day);
         const isHoliday = getIsHoliday(day);
@@ -69,8 +69,8 @@ export function getCurrentEarnings(now: Date): number {
     const isWeekend = getIsWeekend(today);
     const isHoliday = getIsHoliday(today);
     if (!isWeekend && !isHoliday) {
-        const workStart = new Date(year, month, now.getDate(), WORK_HOURS_START, 0, 0, 0);
-        const workEnd = new Date(year, month, now.getDate(), WORK_HOURS_END, 0, 0, 0);
+        const workStart = new TZDate(new Date(year, month, now.getDate(), WORK_HOURS_START, 0, 0, 0), TIME_ZONE);
+        const workEnd = new TZDate(new Date(year, month, now.getDate(), WORK_HOURS_END, 0, 0, 0), TIME_ZONE);
         if (now > workStart) {
             const end = now < workEnd ? now : workEnd;
             const workedMs = end.getTime() - workStart.getTime();
@@ -117,8 +117,8 @@ router.get("/api/earnings", (req, res) => {
         },
         earnings: {
             currentEarnings: currentEarnings,
-            maximumEarnings: maximumEarnings,
             currentEarningsWithVAT: currentEarningsWithVAT,
+            maximumEarnings: maximumEarnings,
             maximumEarningsWithVAT: maximumEarningsWithVAT,
             currency: CURRENCY,
         },

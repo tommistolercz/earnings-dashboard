@@ -29,7 +29,7 @@ describe("getIsHoliday()", () => {
 
     // non-holiday
     it("returns false for a non-holiday", () => {
-        const nonHoliday = new TZDate(new Date("2025-07-07"), earningsApi.TIME_ZONE);
+        const nonHoliday = new TZDate(new Date("2025-07-07"), earningsApi.TIME_ZONE);  // mon 2025-07-07
         expect(earningsApi.getIsHoliday(nonHoliday)).toBe(false);
     });
 
@@ -51,25 +51,25 @@ describe("getIsEarningTime()", () => {
 
     // work hour
     it("returns true for a work hour", () => {
-        const workHour = new TZDate(new Date("2025-07-07T09:00:00"), earningsApi.TIME_ZONE);
+        const workHour = new TZDate(new Date(2025, 6, 7, earningsApi.WORK_HOURS_START, 0, 0), earningsApi.TIME_ZONE);  // mon 2025-07-07
         expect(earningsApi.getIsEarningTime(workHour)).toBe(true);
     });
 
     // outside work hours
     it("returns false for outside work hours", () => {
-        const outsideWorkHours = new TZDate(new Date("2025-07-07T17:01:00"), earningsApi.TIME_ZONE);
+        const outsideWorkHours = new TZDate(new Date(2025, 6, 7, earningsApi.WORK_HOURS_END, 0, 0), earningsApi.TIME_ZONE);  // mon 2025-07-07
         expect(earningsApi.getIsEarningTime(outsideWorkHours)).toBe(false);
     });
 
     // weekend
     it("returns false for a weekend", () => {
-        const weekend = new TZDate(new Date("2025-07-12T10:00:00"), earningsApi.TIME_ZONE);
+        const weekend = new TZDate(new Date("2025-07-12T12:00:00"), earningsApi.TIME_ZONE);  // sat 2025-07-12
         expect(earningsApi.getIsEarningTime(weekend)).toBe(false);
     });
 
     // holiday
     it("returns false for a holiday", () => {
-        const holiday = new TZDate(new Date("2025-04-18T10:00:00"), earningsApi.TIME_ZONE);  // easter good friday
+        const holiday = new TZDate(new Date("2025-04-18T12:00:00"), earningsApi.TIME_ZONE);  // easter good friday
         expect(earningsApi.getIsEarningTime(holiday)).toBe(false);
     });
 });
@@ -79,13 +79,13 @@ describe("getWorkingDaysInMonth()", () => {
 
     // month with 20 working days
     it("returns 20 for a month with 20 working days", () => {
-        const date = new TZDate(new Date("2025-04-18"), earningsApi.TIME_ZONE);
+        const date = new TZDate(new Date("2025-04-15"), earningsApi.TIME_ZONE);
         expect(earningsApi.getWorkingDaysInMonth(date)).toBe(20);
     });
 
     // month with 23 working days
     it("returns 23 for a month with 23 working days", () => {
-        const date = new TZDate(new Date("2025-07-01"), earningsApi.TIME_ZONE);
+        const date = new TZDate(new Date("2025-07-15"), earningsApi.TIME_ZONE);
         expect(earningsApi.getWorkingDaysInMonth(date)).toBe(23);
     });
 });
@@ -93,22 +93,22 @@ describe("getWorkingDaysInMonth()", () => {
 /* getCurrentEarnings() */
 describe("getCurrentEarnings()", () => {
 
-    // zero earnings before working hours in a first working day of the month
-    it("returns 0 before working hours in a first working day of the month", () => {
-        const date = new TZDate(new Date("2025-07-01T08:59:00"), earningsApi.TIME_ZONE);
+    // zero earnings 1 minute before working hours in a first working day of the month
+    it("returns zero earnings 1 minute before working hours in a first working day of the month", () => {
+        const date = new TZDate(new Date(2025, 6, 1, earningsApi.WORK_HOURS_START - 1, 59, 0), earningsApi.TIME_ZONE); // tue 2025-07-01
         expect(earningsApi.getCurrentEarnings(date)).toBe(0);
     });
 
     // earnings for 1 hour of work in a first working day of the month
-    it("returns earnings after 1 hour of work in a first working day of the month", () => {
-        const date = new TZDate(new Date("2025-07-01T10:00:00"), earningsApi.TIME_ZONE);
+    it("returns earnings for 1 hour of work in a first working day of the month", () => {
+        const date = new TZDate(new Date(2025, 6, 1, earningsApi.WORK_HOURS_START + 1, 0, 0), earningsApi.TIME_ZONE);  // tue 2025-07-01
         const expectedEarnings = Math.floor(earningsApi.MANDAY_RATE / 8); // 1 hour of work
         expect(earningsApi.getCurrentEarnings(date)).toBe(expectedEarnings);
     });
 
     // earnings for two and a half days of work
     it("returns earnings for two and a half days of work", () => {
-        const date = new TZDate(new Date("2025-07-03T13:00:00"), earningsApi.TIME_ZONE);
+        const date = new TZDate(new Date(2025, 6, 3, earningsApi.WORK_HOURS_START + 4, 0, 0), earningsApi.TIME_ZONE);  // thu 2025-07-03
         const expectedEarnings = Math.floor(earningsApi.MANDAY_RATE * 2.5);
         expect(earningsApi.getCurrentEarnings(date)).toBe(expectedEarnings);
     });
