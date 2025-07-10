@@ -86,8 +86,8 @@ export function getEarningsWithVAT(earnings: number): number {
     return Math.floor(earnings * (1 + VAT_RATE));
 }
 
-// route for earnings API endpoint
-router.get("/api/earnings", (req, res) => {
+// route for api endpoint
+router.get("/api", (req, res) => {
     const now = new TZDate(new Date(), TIME_ZONE);
     const isWeekend = getIsWeekend(now);
     const isHoliday = getIsHoliday(now);
