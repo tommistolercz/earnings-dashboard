@@ -4,9 +4,9 @@ import path from "path";
 // express router
 const router = Router();
 
-// route for earnings dashboard (homepage)
+// route for / (home)
 router.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../public/earnings-dashboard.html"));
+    res.sendFile(path.join(__dirname, "../../public/home/home.html"));
 });
 
 export default router;

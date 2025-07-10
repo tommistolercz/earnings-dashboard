@@ -1,7 +1,9 @@
 import express from "express";
 import path from "path";
-import earningsDashboard from "./routes/earnings-dashboard";
-import earningsApi from "./routes/earnings-api";
+
+import home from "./routes/home";
+import dashboard from "./routes/dashboard";
+import api from "./routes/api";
 
 // express server
 const app = express();
@@ -11,8 +13,9 @@ const port = 3000;
 app.use("/public", express.static(path.join(__dirname, "../public")));
 
 // routes
-app.use(earningsDashboard);
-app.use(earningsApi);
+app.use(home);
+app.use(dashboard);
+app.use(api);
 
 // error handling
 app.listen(port, () => {

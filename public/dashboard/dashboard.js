@@ -27,7 +27,7 @@ function getNotEarningTimeReason(data) {
 async function getEarnings() {
 
     // call API
-    const res = await fetch("/api/earnings");
+    const res = await fetch("/api");
     const data = await res.json();
 
     // current/maximum earnings
@@ -36,7 +36,6 @@ async function getEarnings() {
 
     // status
     const isEarningTime = data.calendar.isEarningTime;
-
     statusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
     statusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
 }
