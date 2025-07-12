@@ -11,16 +11,19 @@ router.get("/auth/google", passport.authenticate("google", {
 
 // route for login callback after google has authenticated the user
 router.get("/auth/google/callback", passport.authenticate("google", {
-    successRedirect: "/dashboard",
     failureRedirect: "/"
-}));
+}), (req, res) => {
+    console.log("Logged user: ", req.user);
+    res.redirect("/dashboard");
+});
 
 // route for logout
 router.get("/logout", (req, res, next) => {
-    req.logout(() => {
+    req.logout(err => {
+        if (err) return next(err);
         req.session.destroy(err => {
             if (err) return next(err);
-            res.clearCookie("connect.id");
+            res.clearCookie("connect.sid");
             res.redirect("/");
         });
     });
