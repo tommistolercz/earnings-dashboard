@@ -12,6 +12,7 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             // create/update user in db during auth
+            // TODO: createdAt/lastLogin UTC vs local time?
             const user = await prisma.user.upsert({
                 where: { googleId: profile.id },
                 update: {
