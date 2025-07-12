@@ -1,3 +1,12 @@
+/* variables */
+:root {
+    --color-bcg: #f6f8fa;
+    --color-primary: #555;
+    --color-secondary: #b5b5b5;
+    --color-accent: #12a930;
+    --color-warn: #d14c4c;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -11,6 +20,6 @@ body {
     align-items: center;
     height: 100vh;
 
+    background-color: var(--color-bcg);
     font-family: 'Segoe UI', Roboto, sans-serif;
-    background-color: #f6f8fa;
 }
