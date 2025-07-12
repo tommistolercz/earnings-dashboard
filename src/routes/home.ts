@@ -1,8 +1,7 @@
-import { Router } from "express";
+import express from "express";
 import path from "path";
 
-// express router
-const router = Router();
+const router = express.Router();
 
 // route for / (home)
 router.get("/", (req, res) => {

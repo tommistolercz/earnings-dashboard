@@ -4,10 +4,11 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "install": "npm install",
         "dev": "ts-node-dev --respawn src/index.ts",
         "test": "vitest run",
         "test:watch": "vitest --watch",
-        "build": "npm run test && tsc",
+        "build": "npm run test && prisma generate && prisma migrate deploy && tsc",
         "start": "node dist/index.js"
     },
     "keywords": [],
@@ -16,14 +17,25 @@
     "type": "commonjs",
     "dependencies": {
         "@date-fns/tz": "^1.2.0",
+        "@prisma/client": "^6.11.1",
+        "connect-redis": "^9.0.0",
         "date-fns": "^4.1.0",
         "date-holidays": "^3.24.4",
-        "express": "^5.1.0"
+        "dotenv": "^17.2.0",
+        "express": "^5.1.0",
+        "express-session": "^1.18.1",
+        "passport": "^0.7.0",
+        "passport-google-oauth20": "^2.0.0",
+        "redis": "^5.6.0"
     },
     "devDependencies": {
         "@types/express": "^5.0.3",
+        "@types/express-session": "^1.18.2",
         "@types/node": "^24.0.10",
+        "@types/passport": "^1.0.17",
+        "@types/passport-google-oauth20": "^2.0.16",
         "eslint": "^9.30.1",
+        "prisma": "^6.11.1",
         "ts-node-dev": "^2.0.0",
         "typescript": "^5.8.3",
         "vitest": "^3.2.4"

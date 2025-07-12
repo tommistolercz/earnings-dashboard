@@ -1,12 +1,12 @@
-import { Router } from "express";
+import express from "express";
 import path from "path";
+import { isAuthenticated } from "../middleware/authenticated";
 
-// express router
-const router = Router();
+const router = express.Router();
 
 // route for dashboard
-router.get("/dashboard", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../public/dashboard/dashboard.html"));
+router.get("/dashboard", isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, "../../public/dashboard/dashboard.html"),);
 });
 
 export default router;

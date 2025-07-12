@@ -1,15 +1,10 @@
 h1 {
-    color: #555;
+    color: var(--color-primary);
     font-size: 2rem;
     margin-bottom: 0.5rem;
 }
 
-p {
-    font-size: 1rem;
-    color: #555;
-}
-
 a {
-    color: #12a930;
+    color: var(--color-accent);
     text-decoration: none;
 }

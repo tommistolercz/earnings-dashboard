@@ -1,8 +1,9 @@
-import { Router } from "express";
+import express from "express";
+import { isAuthenticatedApi } from "../middleware/authenticated";
 import { TZDate } from "@date-fns/tz";
 import Holidays from "date-holidays";
 
-const router = Router();
+const router = express.Router();
 
 // personal settings
 export const MANDAY_RATE = 7600;
@@ -87,7 +88,7 @@ export function getEarningsWithVAT(earnings: number): number {
 }
 
 // route for api endpoint
-router.get("/api", (req, res) => {
+router.get("/api", isAuthenticatedApi, (req, res) => {
     const now = new TZDate(new Date(), TIME_ZONE);
     const isWeekend = getIsWeekend(now);
     const isHoliday = getIsHoliday(now);
