@@ -1,5 +1,7 @@
 # Earnigns Dashboard
 
+## "Watching money grow is more fun than just earning it!"
+
 [Homepage](https://earnings-dashboard-5vw7.onrender.com/)
 
 ## Local development setup
