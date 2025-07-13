@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { TZDate } from "@date-fns/tz";
 
-import * as api from "../src/routes/api";
+import * as api from "../src/routes/api/api-dashboard";
 
 /* getIsWeekend() */
 describe("getIsWeekend()", () => {
