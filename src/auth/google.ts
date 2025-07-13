@@ -13,7 +13,9 @@ passport.use(
         async (accessToken, refreshToken, profile, done) => {
             // create/update user in db during auth
             const user = await prisma.user.upsert({
-                where: { googleId: profile.id },
+                where: {
+                    googleId: profile.id
+                },
                 update: {
                     lastLogin: new Date(),
                 },
@@ -34,6 +36,8 @@ passport.serializeUser((user: any, done) => {
 });
 
 passport.deserializeUser(async (id: string, done) => {
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({
+        where: { id }
+    });
     done(null, user);
 });

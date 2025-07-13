@@ -23,8 +23,8 @@ function getNotEarningTimeReason(data) {
     }
 }
 
-// get earnings data from API and show them in HTML
-async function getEarnings() {
+// get dashboard data from API and show them in HTML
+async function getDashboardData() {
 
     // call API
     const res = await fetch("/api/dashboard");
@@ -40,6 +40,6 @@ async function getEarnings() {
     statusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
 }
 
-// get earnings and update every second
-getEarnings();
-setInterval(getEarnings, 1000);
+// get dashboard data and update every second
+getDashboardData();
+setInterval(getDashboardData, 1000);

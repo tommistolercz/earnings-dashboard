@@ -22,4 +22,24 @@ body {
 
     background-color: var(--color-bcg);
     font-family: 'Segoe UI', Roboto, sans-serif;
+    color: var(--color-primary);
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 1.5em;
+    z-index: 1000;
+}
+
+.header a {
+    margin-left: 1rem;
+    color: var(--color-accent);
+    text-decoration: none;
 }

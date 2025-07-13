@@ -1,0 +1,48 @@
+.container {
+    padding: 5rem 2rem 2rem;
+}
+
+form label {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    color: var(--color-primary);
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+input::placeholder {
+    font-size: 0.8rem;
+    color: #ddd;
+    opacity: 1;
+}
+
+button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    background-color: var(--color-accent);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: color-mix(in srgb, var(--color-accent), black 10%);
+}
+
+.message {
+    margin: 1rem 0;
+    color: red;
+    font-size: 0.9rem;
+}
