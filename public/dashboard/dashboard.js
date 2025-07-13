@@ -1,45 +1,55 @@
-// HTML element references
-const currentEarningsElement = document.getElementById("current-earnings");
-const maximumEarningsElement = document.getElementById("maximum-earnings");
-const statusElement = document.getElementById("status");
+document.addEventListener("DOMContentLoaded", async () => {
 
-// formatting amounts
-function formatAmount(amount, currency) {
-    amountFormatted = new Intl.NumberFormat("cs-CZ", {
-        style: "decimal",
-        maximumFractionDigits: 0
-    }).format(amount);
-    return `${amountFormatted} ${currency}`;
-}
+    // html elements
+    const currentEarningsElement = document.getElementById("current-earnings");
+    const maximumEarningsElement = document.getElementById("maximum-earnings");
+    const statusElement = document.getElementById("status");
 
-// not-earning time reason
-function getNotEarningTimeReason(data) {
-    if (data.calendar.isWeekend) {
-        return "Weekend!";
-    } else if (data.calendar.isHoliday) {
-        return "Holiday!";
-    } else {
-        return "Outside working hours!";
+    // formatting amounts
+    function formatAmount(amount, currency) {
+        amountFormatted = new Intl.NumberFormat("cs-CZ", {
+            style: "decimal",
+            maximumFractionDigits: 0
+        }).format(amount);
+        return `${amountFormatted} ${currency}`;
     }
-}
 
-// get dashboard data from API and show them in HTML
-async function getDashboardData() {
+    // get not-earning time reason
+    function getNotEarningTimeReason(data) {
+        if (data.calendar.isWeekend) {
+            return "Weekend!";
+        } else if (data.calendar.isHoliday) {
+            return "Holiday!";
+        } else {
+            return "Outside working hours!";
+        }
+    }
 
-    // call API
-    const res = await fetch("/api/dashboard");
-    const data = await res.json();
+    // update dashboard
+    async function updateDashboard() {
 
-    // current/maximum earnings
-    currentEarningsElement.textContent = formatAmount(data.earnings.currentEarningsWithVAT, data.earnings.currency);
-    maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarningsWithVAT, data.earnings.currency);
+        // get dashboard data from api
+        let data;
+        try {
+            const res = await fetch("/api/dashboard");
+            if (!res.ok) throw new Error("Failed to fetch dashboard data");
+            data = await res.json();
+        } catch (err) {
+            console.error("Error: Failed to fetch dashboard data", err);
+            return;
+        }
 
-    // status
-    const isEarningTime = data.calendar.isEarningTime;
-    statusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
-    statusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
-}
+        // show current/maximum earnings
+        currentEarningsElement.textContent = formatAmount(data.earnings.currentEarningsWithVAT, data.earnings.currency);
+        maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarningsWithVAT, data.earnings.currency);
 
-// get dashboard data and update every second
-getDashboardData();
-setInterval(getDashboardData, 1000);
+        // show status
+        const isEarningTime = data.calendar.isEarningTime;
+        statusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
+        statusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
+    }
+
+    // update dashboard data every second
+    updateDashboard();
+    setInterval(updateDashboard, 1000);
+});
