@@ -13,7 +13,7 @@ import "./auth/google";
 import auth from "./routes/auth";
 import home from "./routes/home";
 import dashboard from "./routes/dashboard";
-import api from "./routes/api";
+import api from "./routes/api/api-dashboard";
 
 
 // express server

@@ -27,7 +27,7 @@ function getNotEarningTimeReason(data) {
 async function getEarnings() {
 
     // call API
-    const res = await fetch("/api");
+    const res = await fetch("/api/dashboard");
     const data = await res.json();
 
     // current/maximum earnings
