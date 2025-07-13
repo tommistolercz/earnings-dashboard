@@ -1,6 +1,6 @@
 import express from "express";
 import { isAuthenticatedApi } from "../../middleware/authenticated";
-import { fetch } from "undici";
+import axios from "axios";
 import { UserSettings } from "./api-settings";
 import { TZDate } from "@date-fns/tz";
 import Holidays from "date-holidays";
@@ -84,24 +84,19 @@ export function getEarningsWithVAT(earnings: number, settings: UserSettings): nu
 router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
 
     // get user settings from api
-    let data;
+    let settings: UserSettings;
     try {
-        const settingsRes = await fetch(
+        const settingsRes = await axios.get(
             `${req.protocol}://${req.get("host")}/api/settings`, {
-            headers: Object.fromEntries(
-                Object.entries(req.headers).map(([key, value]) => [key, Array.isArray(value) ? value.join(",") : value])
-            ),
+            headers: req.headers,
         });
-        if (settingsRes.ok) {
-            data = await settingsRes.json();
-        } else {
-            throw new Error("Failed to fetch settings");
-        }
+        settings = settingsRes.data;
     } catch (err) {
-        console.error("Error: Failed to fetch settings", err);
+        if (axios.isAxiosError(err)) {
+            console.error("Error: Failed to fetch settings", err.response?.status, err.response?.data);
+        }
         return;
-    };
-    const settings: UserSettings = data as UserSettings;
+    }
 
     const now = new TZDate(new Date(), settings.timeZone);
     const isWeekend = getIsWeekend(now);
