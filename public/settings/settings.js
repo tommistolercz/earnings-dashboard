@@ -1,30 +1,32 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const form = document.getElementById("settings-form");
-    const messageBox = document.getElementById("message");
+    // html elements
+    const formElement = document.getElementById("settings-form");
+    const messageElement = document.getElementById("message");
 
-    // Load existing settings
+    // load existing settings
+    let data;
     try {
         const res = await fetch("/api/settings");
         if (res.ok) {
-            const data = await res.json();
+            data = await res.json();
             for (const [key, value] of Object.entries(data)) {
-                const input = form.elements.namedItem(key);
+                const input = formElement.elements.namedItem(key);
                 if (input) input.value = value;
             }
         } else if (res.status !== 404) {
-            messageBox.textContent = "Error loading settings.";
+            throw new Error("Failed to fetch settings");
         }
     } catch (err) {
-        messageBox.textContent = "Failed to load settings.";
+        console.error("Error: Failed to fetch settings", err);
     }
 
-    // Handle form submit
-    form.addEventListener("submit", async (e) => {
+    // form submit
+    formElement.addEventListener("submit", async (e) => {
         e.preventDefault();
-        messageBox.textContent = "";
+        messageElement.textContent = "";
 
-        const formData = new FormData(form);
+        const formData = new FormData(formElement);
         const payload = {};
 
         for (const [key, value] of formData.entries()) {
@@ -36,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (payload.workHoursStart > payload.workHoursEnd) {
-            messageBox.textContent = "Work hours start must be before end.";
+            messageElement.textContent = "Work hours start must be before end.";
             return;
         }
 
@@ -50,12 +52,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (res.ok) {
                 window.location.href = "/dashboard";
             } else {
-                const err = await res.json();
-                messageBox.style.color = "red";
-                messageBox.textContent = "Save failed: " + (err.details?.[0]?.message || err.error);
+                messageElement.style.color = "red";
+                messageElement.textContent = "Failed to save settings";
+                throw new Error("Failed to save settings");
             }
         } catch (err) {
-            messageBox.textContent = "Error saving settings.";
+            console.error("Error: Failed to save settings", err);
         }
     });
 });
