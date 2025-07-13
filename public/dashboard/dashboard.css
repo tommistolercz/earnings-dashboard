@@ -1,20 +1,3 @@
-.header {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 2rem;
-    z-index: 1000;
-}
-
-.header a {
-    color: var(--color-accent);
-    text-decoration: none;
-}
-
 .container {
     padding: 5rem 2rem 2rem;
 }

@@ -1,18 +1,11 @@
 import express from "express";
 import { isAuthenticatedApi } from "../../middleware/authenticated";
+import axios from "axios";
+import { UserSettings } from "./api-settings";
 import { TZDate } from "@date-fns/tz";
 import Holidays from "date-holidays";
 
 const router = express.Router();
-
-// personal settings
-export const MANDAY_RATE = 7600;
-export const CURRENCY = "CZK";
-export const VAT_RATE = 0.21; // 21% VAT
-export const COUNTRY = "CZ"; // user's country (for holidays)
-export const TIME_ZONE = "Europe/Prague"; // user's time zone
-export const WORK_HOURS_START = 9;
-export const WORK_HOURS_END = 17;
 
 // returns true if the date is a weekend
 export function getIsWeekend(now: Date): boolean {
@@ -20,95 +13,99 @@ export function getIsWeekend(now: Date): boolean {
 }
 
 // returns true if the date is a public holiday
-export function getIsHoliday(now: Date): boolean {
-    const holidays = new Holidays(COUNTRY);
+export function getIsHoliday(now: Date, settings: UserSettings): boolean {
+    const holidays = new Holidays(settings.country);
     const todayHolidays = holidays.isHoliday(now);
     return todayHolidays ? todayHolidays.some(holiday => holiday.type === "public") : false;
 }
 
 // returns true if the current time is within earning hours
-export function getIsEarningTime(now: Date): boolean {
+export function getIsEarningTime(now: Date, settings: UserSettings): boolean {
     const hour = now.getHours();
-    const isWorkHour = hour >= WORK_HOURS_START && hour < WORK_HOURS_END;
+    const isWorkHour = hour >= settings.workHoursStart && hour < settings.workHoursEnd;
     const isWeekend = getIsWeekend(now);
-    const isHoliday = getIsHoliday(now);
+    const isHoliday = getIsHoliday(now, settings);
     return isWorkHour && !isWeekend && !isHoliday;
 }
 
 // returns the number of working days in a month
-export function getWorkingDaysInMonth(now: Date): number {
+export function getWorkingDaysInMonth(now: Date, settings: UserSettings): number {
     let count = 0;
-    const daysInMonth = new TZDate(new Date(now.getFullYear(), now.getMonth() + 1, 0), TIME_ZONE).getDate();
+    const daysInMonth = new TZDate(new Date(now.getFullYear(), now.getMonth() + 1, 0), settings.timeZone).getDate();
     for (let day = 1; day <= daysInMonth; day++) {
-        const date = new TZDate(new Date(now.getFullYear(), now.getMonth(), day), TIME_ZONE);
+        const date = new TZDate(new Date(now.getFullYear(), now.getMonth(), day), settings.timeZone);
         const isWeekend = getIsWeekend(date);
-        const isHoliday = getIsHoliday(date);
+        const isHoliday = getIsHoliday(date, settings);
         if (!isWeekend && !isHoliday) count++;
     }
     return count;
 }
 
 // calculates current earnings from the start of the month until now
-export function getCurrentEarnings(now: Date): number {
+export function getCurrentEarnings(now: Date, settings: UserSettings): number {
     let earnings = 0;
     const msPerHour = 1000 * 60 * 60;
     const year = now.getFullYear();
     const month = now.getMonth();
-    const startOfMonth = new TZDate(new Date(year, month, 1, WORK_HOURS_START, 0, 0, 0), TIME_ZONE);
-    const today = new TZDate(new Date(year, month, now.getDate()), TIME_ZONE);
+    const startOfMonth = new TZDate(new Date(year, month, 1, settings.workHoursStart, 0, 0, 0), settings.timeZone);
+    const today = new TZDate(new Date(year, month, now.getDate()), settings.timeZone);
 
-    let day = new TZDate(new Date(startOfMonth), TIME_ZONE);
+    let day = new TZDate(new Date(startOfMonth), settings.timeZone);
     while (day < today) {
         const isWeekend = getIsWeekend(day);
-        const isHoliday = getIsHoliday(day);
+        const isHoliday = getIsHoliday(day, settings);
         if (!isWeekend && !isHoliday) {
-            earnings += MANDAY_RATE;
+            earnings += settings.mandayRate; // full day earnings
         }
         day.setDate(day.getDate() + 1);
     }
     // for today - only if it is a working day and within working hours
     const isWeekend = getIsWeekend(today);
-    const isHoliday = getIsHoliday(today);
+    const isHoliday = getIsHoliday(today, settings);
     if (!isWeekend && !isHoliday) {
-        const workStart = new TZDate(new Date(year, month, now.getDate(), WORK_HOURS_START, 0, 0, 0), TIME_ZONE);
-        const workEnd = new TZDate(new Date(year, month, now.getDate(), WORK_HOURS_END, 0, 0, 0), TIME_ZONE);
+        const workStart = new TZDate(new Date(year, month, now.getDate(), settings.workHoursStart, 0, 0, 0), settings.timeZone);
+        const workEnd = new TZDate(new Date(year, month, now.getDate(), settings.workHoursEnd, 0, 0, 0), settings.timeZone);
         if (now > workStart) {
             const end = now < workEnd ? now : workEnd;
             const workedMs = end.getTime() - workStart.getTime();
             const workedHours = workedMs / msPerHour;
-            earnings += (MANDAY_RATE / 8) * workedHours;
+            earnings += (settings.mandayRate / 8) * workedHours;
         }
     }
     return Math.floor(earnings);
 }
 
 // calculates earnings with VAT
-export function getEarningsWithVAT(earnings: number): number {
-    return Math.floor(earnings * (1 + VAT_RATE));
+export function getEarningsWithVAT(earnings: number, settings: UserSettings): number {
+    return Math.floor(earnings * (1 + settings.vatRate));
 }
 
 // route for api endpoint
-router.get("/api/dashboard", isAuthenticatedApi, (req, res) => {
-    const now = new TZDate(new Date(), TIME_ZONE);
+router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
+
+    // get user settings from api
+    const settingsResponse = await axios.get(
+        `${req.protocol}://${req.get("host")}/api/settings`, {
+        headers: req.headers, // předání cookies/session dál
+    });
+    if (!settingsResponse.data) {
+        res.status(404).json({ error: "User settings not found" });
+        return;
+    }
+    const settings = settingsResponse.data;
+
+    const now = new TZDate(new Date(), settings.timeZone);
     const isWeekend = getIsWeekend(now);
-    const isHoliday = getIsHoliday(now);
-    const isEarningTime = getIsEarningTime(now);
-    const workingDaysInMonth = getWorkingDaysInMonth(now);
-    const currentEarnings = getCurrentEarnings(now);
-    const currentEarningsWithVAT = getEarningsWithVAT(currentEarnings);
-    const maximumEarnings = workingDaysInMonth * MANDAY_RATE;
-    const maximumEarningsWithVAT = getEarningsWithVAT(maximumEarnings);
+    const isHoliday = getIsHoliday(now, settings);
+    const isEarningTime = getIsEarningTime(now, settings);
+    const workingDaysInMonth = getWorkingDaysInMonth(now, settings);
+    const currentEarnings = getCurrentEarnings(now, settings);
+    const currentEarningsWithVAT = getEarningsWithVAT(currentEarnings, settings);
+    const maximumEarnings = workingDaysInMonth * settings.mandayRate;
+    const maximumEarningsWithVAT = getEarningsWithVAT(maximumEarnings, settings);
 
     res.json({
-        personalSettings: {
-            mandayRate: MANDAY_RATE,
-            currency: CURRENCY,
-            vatRate: VAT_RATE,
-            country: COUNTRY,
-            timeZone: TIME_ZONE,
-            workHoursStart: WORK_HOURS_START,
-            workHoursEnd: WORK_HOURS_END,
-        },
+        settings: settings,
         calendar: {
             now: now,
             isWeekend: isWeekend,
@@ -121,7 +118,7 @@ router.get("/api/dashboard", isAuthenticatedApi, (req, res) => {
             currentEarningsWithVAT: currentEarningsWithVAT,
             maximumEarnings: maximumEarnings,
             maximumEarningsWithVAT: maximumEarningsWithVAT,
-            currency: CURRENCY,
+            currency: settings.currency,
         },
     });
 });

@@ -13,4 +13,22 @@ model User {
     email     String
     createdAt DateTime @default(now())
     lastLogin DateTime @default(now())
+
+    UserSetting UserSetting?
+}
+
+model UserSetting {
+    id             String   @id @default(cuid())
+    userId         String   @unique
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @default(now())
+    mandayRate     Int
+    currency       String
+    vatRate        Float
+    country        String
+    timeZone       String
+    workHoursStart Int
+    workHoursEnd   Int
+
+    user User @relation(fields: [userId], references: [id])
 }

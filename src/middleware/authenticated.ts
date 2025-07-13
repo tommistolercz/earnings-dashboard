@@ -13,5 +13,5 @@ export function isAuthenticatedApi(req: Request, res: Response, next: NextFuncti
     if (req.isAuthenticated && req.isAuthenticated()) {
         return next();
     }
-    res.status(401).json({ error: "Not authenticated" });
+    res.status(401).json({ error: "Unauthorized" });
 }

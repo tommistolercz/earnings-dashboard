@@ -13,8 +13,9 @@ import "./auth/google";
 import auth from "./routes/auth";
 import home from "./routes/home";
 import dashboard from "./routes/dashboard";
-import api from "./routes/api/api-dashboard";
-
+import settings from "./routes/settings";
+import apiDashboard from "./routes/api/api-dashboard";
+import apiSettings from "./routes/api/api-settings";
 
 // express server
 const app = express();
@@ -22,6 +23,10 @@ const port = process.env.PORT || "3000";
 
 // static frontend files
 app.use("/public", express.static(path.join(__dirname, "../public")));
+
+// setup for parsing request bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // session middleware (store session between requests)
 app.use(session({
@@ -46,7 +51,9 @@ app.use(passport.session());
 app.use(auth);
 app.use(home);
 app.use(dashboard);
-app.use(api);
+app.use(settings);
+app.use(apiDashboard);
+app.use(apiSettings);
 
 // error handling
 app.listen(port, () => {

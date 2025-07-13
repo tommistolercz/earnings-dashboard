@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Earnings Dashboard</title>
+    <link rel="stylesheet" href="/public/main.css" />
+    <link rel="stylesheet" href="/public/settings/settings.css" />
+</head>
+
+<body>
+    <div class="header">
+        <a href="/dashboard">Back to Dashboard</a>
+        <a href="/logout">Sign Out</a>
+    </div>
+
+    <div class="container">
+        <form id="settings-form">
+            <label>
+                Manday Rate
+                <input type="number" name="mandayRate" required min="0" placeholder="example: 10000" />
+            </label>
+            <label>
+                Currency
+                <input type="text" name="currency" required pattern="^[A-Z]{3}$" placeholder="example: CZK" />
+            </label>
+            <label>
+                VAT Rate
+                <input type="number" name="vatRate" required min="0" max="1" step="0.01" placeholder="example: 0,21" />
+            </label>
+            <label>
+                Country
+                <input type="text" name="country" required pattern="^[A-Z]{2}$" placeholder="example: CZ" />
+            </label>
+            <label>
+                Time Zone
+                <input type="text" name="timeZone" required pattern="^[A-Za-z0-9_\-]+\/[A-Za-z0-9_\-]+$"
+                    placeholder="example: Europe/Prague" />
+            </label>
+            <label>
+                Work Hours Start
+                <input type="number" name="workHoursStart" required min="0" max="23" placeholder="example: 9" />
+            </label>
+            <label>
+                Work Hours End
+                <input type="number" name="workHoursEnd" required min="0" max="23" placeholder="example: 17" />
+            </label>
+            <div id="message" class="message"></div>
+            <button type="submit">Save Settings</button>
+        </form>
+    </div>
+
+    <script src="/public/settings/settings.js"></script>
+</body>
+
+</html>
