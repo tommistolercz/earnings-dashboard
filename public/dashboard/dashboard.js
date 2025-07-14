@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // html elements
     const currentEarningsElement = document.getElementById("current-earnings");
+    const currentEarningsStatusElement = document.getElementById("current-earnings-status");
     const maximumEarningsElement = document.getElementById("maximum-earnings");
-    const statusElement = document.getElementById("status");
 
     let interval;
     async function updateDashboard() {
@@ -42,14 +42,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // show current/maximum earnings
+        // show current earnings
         currentEarningsElement.textContent = formatAmount(data.earnings.currentEarningsWithVAT, data.earnings.currency);
-        maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarningsWithVAT, data.earnings.currency);
-
-        // show status
         const isEarningTime = data.calendar.isEarningTime;
-        statusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
-        statusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
+        currentEarningsStatusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
+        currentEarningsStatusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
+
+        // show maximum earnings
+        maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarningsWithVAT, data.earnings.currency);
     }
 
     // update dashboard data every second

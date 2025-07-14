@@ -4,7 +4,7 @@
 
 .card {
     margin: 2rem;
-    padding: 2rem 3rem;
+    padding: 2rem;
     min-width: 300px;
     background-color: #ffffff;
     border-radius: 12px;
@@ -27,36 +27,27 @@
     font-size: 2rem;
     font-weight: bold;
     color: var(--color-accent);
+    margin-bottom: 0.5rem;
 }
 
 .card small {
     display: block;
-    margin-top: 0.5rem;
     font-size: 0.8rem;
     color: var(--color-secondary);
+    margin-bottom: 0.8rem;
 }
 
-.status {
-    margin: 2rem;
-    padding: 0.75rem 1.5rem;
-    min-width: 300px;
-    background-color: gray;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.3s ease;
-    text-align: center;
-    font-size: 0.95rem;
+.card .status {
+    border-radius: 6px;
+    padding: 0.25rem;
     color: white;
+    font-size: 0.8rem;
 }
 
-.status:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.status.earning {
+.card .status.earning {
     background-color: var(--color-accent);
 }
 
-.status.not-earning {
+.card .status.not-earning {
     background-color: var(--color-warn);
 }
