@@ -1,10 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // html elements
-    const currentEarningsElement = document.getElementById("current-earnings");
-    const maximumEarningsElement = document.getElementById("maximum-earnings");
-    const statusElement = document.getElementById("status");
-
     // formatting amounts
     function formatAmount(amount, currency) {
         amountFormatted = new Intl.NumberFormat("cs-CZ", {
@@ -25,17 +20,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // update dashboard
+    // html elements
+    const currentEarningsElement = document.getElementById("current-earnings");
+    const maximumEarningsElement = document.getElementById("maximum-earnings");
+    const statusElement = document.getElementById("status");
+
+    let interval;
     async function updateDashboard() {
 
         // get dashboard data from api
         let data;
         try {
             const res = await fetch("/api/dashboard");
-            if (!res.ok) throw new Error("Failed to fetch dashboard data");
+            if (!res.ok) {
+                throw new Error("Failed to fetch dashboard data");
+            }
             data = await res.json();
         } catch (err) {
             console.error("Error: Failed to fetch dashboard data", err);
+            clearInterval(interval); // stop the interval on error
             return;
         }
 
@@ -51,5 +54,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // update dashboard data every second
     updateDashboard();
-    setInterval(updateDashboard, 1000);
+    interval = setInterval(updateDashboard, 1000);
 });

@@ -44,32 +44,21 @@ export type UserSettings = z.infer<typeof userSettingsSchema>;
 // route for api endpoint - get user settings
 router.get("/api/settings", isAuthenticatedApi, async (req, res) => {
 
-    // check if user is authenticated and has an id
-    if (!req.user || !req.user.id) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-    }
-
     // get user settings from db
-    const userSettings = await prisma.userSetting.findUnique({
-        where: { userId: req.user.id }
+    const settings = await prisma.userSetting.findUnique({
+        where: { userId: req.user!.id }
     });
-    if (!userSettings) {
+    if (!settings) {
         res.status(404).json({ error: "User settings not found" });
         return;
     }
-    res.json(userSettings);
+
+    res.json(settings);
 });
 
 
 // route for api endpoint - set user settings
 router.post("/api/settings", isAuthenticatedApi, async (req, res) => {
-
-    // check if user is authenticated and has an id
-    if (!req.user || !req.user.id) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-    }
 
     // validate request body against schema
     const parser = userSettingsSchema.safeParse(req.body);
@@ -78,7 +67,6 @@ router.post("/api/settings", isAuthenticatedApi, async (req, res) => {
             error: "Invalid user settings",
             details: parser.error.issues,
         });
-
         return;
     }
     const parsedBody: UserSettings = parser.data;
@@ -86,7 +74,7 @@ router.post("/api/settings", isAuthenticatedApi, async (req, res) => {
     // store user settings into db
     await prisma.userSetting.upsert({
         where: {
-            userId: req.user.id
+            userId: req.user!.id
         },
         update: {
             updatedAt: new Date(),
@@ -99,7 +87,7 @@ router.post("/api/settings", isAuthenticatedApi, async (req, res) => {
             workHoursEnd: parsedBody.workHoursEnd,
         },
         create: {
-            userId: req.user.id,
+            userId: req.user!.id,
             mandayRate: parsedBody.mandayRate,
             currency: parsedBody.currency,
             vatRate: parsedBody.vatRate,
@@ -112,6 +100,5 @@ router.post("/api/settings", isAuthenticatedApi, async (req, res) => {
 
     res.status(200).json({ message: "User settings updated successfully" });
 });
-
 
 export default router;

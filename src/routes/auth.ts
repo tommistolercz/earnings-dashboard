@@ -1,5 +1,6 @@
 import express from "express";
 import passport from "passport";
+import { prisma } from "../db/db";
 
 const router = express.Router();
 
@@ -12,8 +13,17 @@ router.get("/auth/google", passport.authenticate("google", {
 // route for login callback after google has authenticated the user
 router.get("/auth/google/callback", passport.authenticate("google", {
     failureRedirect: "/"
-}), (req, res) => {
+}), async (req, res) => {
     console.log("Logged user: ", req.user);
+
+    // check if user settings exist in db - if not redirect to settings page
+    const settings = await prisma.userSetting.findUnique({
+        where: { userId: req.user!.id }
+    });
+    if (!settings) {
+        console.log("User settings not found after auth, redirecting to settings page.");
+        return res.redirect("/settings");
+    }
     res.redirect("/dashboard");
 });
 

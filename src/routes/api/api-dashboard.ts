@@ -1,6 +1,6 @@
 import express from "express";
 import { isAuthenticatedApi } from "../../middleware/authenticated";
-import axios from "axios";
+import { prisma } from "../../db/db";
 import { UserSettings } from "./api-settings";
 import { TZDate } from "@date-fns/tz";
 import Holidays from "date-holidays";
@@ -80,21 +80,16 @@ export function getEarningsWithVAT(earnings: number, settings: UserSettings): nu
     return Math.floor(earnings * (1 + settings.vatRate));
 }
 
+
 // route for api endpoint
 router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
 
-    // get user settings from api
-    let settings: UserSettings;
-    try {
-        const settingsRes = await axios.get(
-            `${req.protocol}://${req.get("host")}/api/settings`, {
-            headers: req.headers,
-        });
-        settings = settingsRes.data;
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
-            console.error("Error: Failed to fetch settings", err.response?.status, err.response?.data);
-        }
+    // get user settings from db
+    const settings = await prisma.userSetting.findUnique({
+        where: { userId: req.user!.id }
+    });
+    if (!settings) {
+        res.status(404).json({ error: "User settings not found" });
         return;
     }
 

@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const formElement = document.getElementById("settings-form");
     const messageElement = document.getElementById("message");
 
-    // load existing settings
+    // load settings
     let data;
     try {
         const res = await fetch("/api/settings");
@@ -14,7 +14,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const input = formElement.elements.namedItem(key);
                 if (input) input.value = value;
             }
-        } else if (res.status !== 404) {
+        } else if (res.status === 404) {
+            messageElement.style.color = "red";
+            messageElement.textContent = "Please fill your settings.";
+        } else {
             throw new Error("Failed to fetch settings");
         }
     } catch (err) {
@@ -48,12 +51,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             });
-
             if (res.ok) {
                 window.location.href = "/dashboard";
             } else {
                 messageElement.style.color = "red";
-                messageElement.textContent = "Failed to save settings";
+                messageElement.textContent = "Failed to save settings.";
                 throw new Error("Failed to save settings");
             }
         } catch (err) {
