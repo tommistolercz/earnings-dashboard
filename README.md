@@ -30,3 +30,7 @@ Redis local server
 ### Automated deployment
 
 - [Render.com](https://dashboard.render.com/project/prj-d1o1i97fte5s73c8u6pg)
+
+### Google oAuth2 administration
+
+- [Google Auth Platform](https://console.cloud.google.com/auth/overview?project=earnings-dashboard-465522)
