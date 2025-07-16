@@ -2,26 +2,27 @@ import express from "express";
 import { isAuthenticatedApi } from "../../middleware/authenticated";
 import { prisma } from "../../db/db";
 import { UserSettings } from "./api-settings";
-import { TZDate } from "@date-fns/tz";
+import { DateTime } from "luxon";
 import Holidays from "date-holidays";
 
 const router = express.Router();
 
 // returns true if the date is a weekend
-export function getIsWeekend(now: Date): boolean {
-    return now.getDay() === 0 || now.getDay() === 6;
+export function getIsWeekend(now: DateTime): boolean {
+    const weekday = now.weekday;
+    return weekday === 6 || weekday === 7; // saturday or sunday
 }
 
 // returns true if the date is a public holiday
-export function getIsHoliday(now: Date, settings: UserSettings): boolean {
+export function getIsHoliday(now: DateTime, settings: UserSettings): boolean {
     const holidays = new Holidays(settings.country);
-    const todayHolidays = holidays.isHoliday(now);
+    const todayHolidays = holidays.isHoliday(now.toJSDate());
     return todayHolidays ? todayHolidays.some(holiday => holiday.type === "public") : false;
 }
 
 // returns true if the current time is within earning hours
-export function getIsEarningTime(now: Date, settings: UserSettings): boolean {
-    const hour = now.getHours();
+export function getIsEarningTime(now: DateTime, settings: UserSettings): boolean {
+    const hour = now.hour;
     const isWorkHour = hour >= settings.workHoursStart && hour < settings.workHoursEnd;
     const isWeekend = getIsWeekend(now);
     const isHoliday = getIsHoliday(now, settings);
@@ -29,11 +30,15 @@ export function getIsEarningTime(now: Date, settings: UserSettings): boolean {
 }
 
 // returns the number of working days in a month
-export function getWorkingDaysInMonth(now: Date, settings: UserSettings): number {
+export function getWorkingDaysInMonth(now: DateTime, settings: UserSettings): number {
     let count = 0;
-    const daysInMonth = new TZDate(new Date(now.getFullYear(), now.getMonth() + 1, 0), settings.timeZone).getDate();
+    const daysInMonth = now.endOf("month").day;
     for (let day = 1; day <= daysInMonth; day++) {
-        const date = new TZDate(new Date(now.getFullYear(), now.getMonth(), day), settings.timeZone);
+        const date = DateTime.fromObject({
+            year: now.year,
+            month: now.month,
+            day: day
+        }, { zone: settings.timeZone });
         const isWeekend = getIsWeekend(date);
         const isHoliday = getIsHoliday(date, settings);
         if (!isWeekend && !isHoliday) count++;
@@ -42,32 +47,58 @@ export function getWorkingDaysInMonth(now: Date, settings: UserSettings): number
 }
 
 // calculates current earnings from the start of the month until now
-export function getCurrentEarnings(now: Date, settings: UserSettings): number {
+export function getCurrentEarnings(now: DateTime, settings: UserSettings): number {
     let earnings = 0;
     const msPerHour = 1000 * 60 * 60;
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const startOfMonth = new TZDate(new Date(year, month, 1, settings.workHoursStart, 0, 0, 0), settings.timeZone);
-    const today = new TZDate(new Date(year, month, now.getDate()), settings.timeZone);
+    const year = now.year;
+    const month = now.month;
+    const startOfMonth = DateTime.fromObject({
+        year: year,
+        month: month,
+        day: 1,
+        hour: settings.workHoursStart,
+        minute: 0,
+        second: 0
+    }, { zone: settings.timeZone });
+    const today = DateTime.fromObject({
+        year: year,
+        month: month,
+        day: now.day
+    }, { zone: settings.timeZone });
 
-    let day = new TZDate(new Date(startOfMonth), settings.timeZone);
+    // calculate earnings for each day of the month until today
+    let day = startOfMonth;
     while (day < today) {
         const isWeekend = getIsWeekend(day);
         const isHoliday = getIsHoliday(day, settings);
         if (!isWeekend && !isHoliday) {
-            earnings += settings.mandayRate; // full day earnings
+            earnings += settings.mandayRate;
         }
-        day.setDate(day.getDate() + 1);
+        day = day.plus({ days: 1 });
     }
-    // for today - only if it is a working day and within working hours
+    // for today
     const isWeekend = getIsWeekend(today);
     const isHoliday = getIsHoliday(today, settings);
     if (!isWeekend && !isHoliday) {
-        const workStart = new TZDate(new Date(year, month, now.getDate(), settings.workHoursStart, 0, 0, 0), settings.timeZone);
-        const workEnd = new TZDate(new Date(year, month, now.getDate(), settings.workHoursEnd, 0, 0, 0), settings.timeZone);
+        const workStart = DateTime.fromObject({
+            year: year,
+            month: month,
+            day: now.day,
+            hour: settings.workHoursStart,
+            minute: 0,
+            second: 0
+        }, { zone: settings.timeZone });
+        const workEnd = DateTime.fromObject({
+            year: year,
+            month: month,
+            day: now.day,
+            hour: settings.workHoursEnd,
+            minute: 0,
+            second: 0
+        }, { zone: settings.timeZone });
         if (now > workStart) {
             const end = now < workEnd ? now : workEnd;
-            const workedMs = end.getTime() - workStart.getTime();
+            const workedMs = end.toMillis() - workStart.toMillis();
             const workedHours = workedMs / msPerHour;
             earnings += (settings.mandayRate / 8) * workedHours;
         }
@@ -93,7 +124,7 @@ router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
         return;
     }
 
-    const now = new TZDate(new Date(), settings.timeZone);
+    const now = DateTime.now().setZone(settings.timeZone);
     const isWeekend = getIsWeekend(now);
     const isHoliday = getIsHoliday(now, settings);
     const isEarningTime = getIsEarningTime(now, settings);
