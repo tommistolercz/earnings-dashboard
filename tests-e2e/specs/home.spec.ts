@@ -1,14 +1,14 @@
 import { test, expect } from "@playwright/test";
 import { Home } from "../pages/home";
 
-/* Home tests */
+/* Home e2e tests */
 
 test.describe("Home", () => {
 
     test("should load with correct title", async ({ page }) => {
         const home = new Home(page);
         await home.goto();
-        await expect(home.page).toHaveTitle("Home | Earnings Dashboard");
+        await expect(page).toHaveTitle("Home | Earnings Dashboard");
     });
 
     test("should show heading", async ({ page }) => {
@@ -17,10 +17,17 @@ test.describe("Home", () => {
         await expect(home.heading).toBeVisible();
     });
 
-    test("should show sign in link button", async ({ page }) => {
+    test("should show sign in link", async ({ page }) => {
         const home = new Home(page);
         await home.goto();
-        await expect(home.signInLinkButton).toBeVisible();
+        await expect(home.signInLink).toBeVisible();
+    });
+
+    test("should redirect to google oauth when clicking sign in link", async ({ page }) => {
+        const home = new Home(page);
+        await home.goto();
+        await home.signInLink.click();
+        await expect(page).toHaveURL(/accounts\.google\.com/);
     });
 
 });
