@@ -146,3 +146,4 @@ prisma/dev.db
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+tests-e2e/config/storageState.json
