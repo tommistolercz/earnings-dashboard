@@ -1,4 +1,4 @@
-# Earnigns Dashboard
+# Earnings Dashboard
 
 ## "Watching money grow is more fun than just earning it!"
 
@@ -13,19 +13,23 @@
 - DB: PostgreSQL, Redis, Prisma
 - API: REST
 - Auth: Google oAuth2, Passport
-- Testing: Vitest
+- Testing: Vitest, Playwright
 
 ### How to set up local environment
 
 PostgreSQL local server
 
-> `brew install postgresql`
-> `brew services start postgresql`
+```bash
+brew install postgresql
+brew services start postgresql
+```
 
 Redis local server
 
-> `brew install redis`
-> `brew services start redis`
+```bash
+brew install redis
+brew services start redis
+```
 
 ### Automated deployment
 
