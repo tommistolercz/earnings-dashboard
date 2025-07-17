@@ -140,3 +140,9 @@ vite.config.ts.timestamp-*
 
 # prisma
 prisma/dev.db
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
