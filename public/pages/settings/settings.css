@@ -10,7 +10,8 @@ form label {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+select {
     width: 100%;
     padding: 0.5rem;
     font-size: 1rem;
@@ -19,7 +20,19 @@ input[type="number"] {
     border-radius: 4px;
 }
 
-input::placeholder {
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("/public/images/angle-down-solid.svg");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+    padding-right: 2rem;
+}
+
+input::placeholder,
+select::placeholder {
     font-size: 0.8rem;
     color: #ddd;
     opacity: 1;

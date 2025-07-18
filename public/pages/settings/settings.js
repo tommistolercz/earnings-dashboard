@@ -1,5 +1,26 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
+    // populate data for dropdowns
+    const [tzRes, countryRes] = await Promise.all([
+        fetch("/public/data/timezones.json"),
+        fetch("/public/data/countries.json")
+    ]);
+    const timezones = await tzRes.json();
+    const countries = await countryRes.json();
+
+    fillDropdown("timeZone", timezones);
+    fillDropdown("country", countries);
+
+    function fillDropdown(selectId, options) {
+        const select = document.getElementById(selectId);
+        options.forEach(o => {
+            const option = document.createElement("option");
+            option.value = o.value;
+            option.textContent = o.label;
+            select.appendChild(option);
+        });
+    }
+
     // html elements
     const formElement = document.getElementById("settings-form");
     const messageElement = document.getElementById("message");

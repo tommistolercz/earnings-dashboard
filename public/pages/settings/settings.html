@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Settings | Earnings Dashboard</title>
-    <link rel="stylesheet" href="/public/main.css" />
-    <link rel="stylesheet" href="/public/settings/settings.css" />
+    <link rel="stylesheet" href="/public/styles/main.css" />
+    <link rel="stylesheet" href="/public/pages/settings/settings.css" />
 </head>
 
 <body>
@@ -30,12 +30,13 @@
             </label>
             <label>
                 Country
-                <input type="text" name="country" required pattern="^[A-Z]{2}$" placeholder="example: CZ" />
+                <select id="country" name="country" required pattern="^[A-Z]{2}$">
+                </select>
             </label>
             <label>
                 Time Zone
-                <input type="text" name="timeZone" required pattern="^[A-Za-z0-9_\-]+\/[A-Za-z0-9_\-]+$"
-                    placeholder="example: Europe/Prague" />
+                <select id="timeZone" name="timeZone" required pattern="^[A-Za-z0-9_\-]+\/[A-Za-z0-9_\-]+$">
+                </select>
             </label>
             <label>
                 Work Hours Start
@@ -50,7 +51,7 @@
         </form>
     </div>
 
-    <script src="/public/settings/settings.js"></script>
+    <script src="/public/pages/settings/settings.js"></script>
 </body>
 
 </html>
