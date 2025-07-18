@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // formatting amounts
+    // format amounts
     function formatAmount(amount, currency) {
         amountFormatted = new Intl.NumberFormat("cs-CZ", {
             style: "decimal",
@@ -20,15 +20,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // html elements
-    const currentEarningsElement = document.getElementById("current-earnings");
-    const currentEarningsStatusElement = document.getElementById("current-earnings-status");
-    const maximumEarningsElement = document.getElementById("maximum-earnings");
+    // loading spinner
+    class LoadingSpinner {
+        constructor() {
+            this.spinnerElement = document.getElementById("loading-spinner");
+            this.containerElement = document.getElementById("container");
+        }
+        show() {
+            this.containerElement.style.display = "none";
+            this.spinnerElement.style.display = "block";
+        }
+        hide() {
+            this.spinnerElement.style.display = "none";
+            this.containerElement.style.display = "block";
+        }
+    }
 
-    let interval;
+    // update dashboard 
     async function updateDashboard() {
 
-        // get dashboard data from api
+        const currentEarningsElement = document.getElementById("current-earnings");
+        const currentEarningsStatusElement = document.getElementById("current-earnings-status");
+        const maximumEarningsElement = document.getElementById("maximum-earnings");
+
         let data;
         try {
             const res = await fetch("/api/dashboard");
@@ -38,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             data = await res.json();
         } catch (err) {
             console.error("Error: Failed to fetch dashboard data", err);
-            clearInterval(interval); // stop the interval on error
+            clearInterval(interval);
             return;
         }
 
@@ -52,7 +66,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarningsWithVAT, data.earnings.currency);
     }
 
-    // update dashboard data every second
-    updateDashboard();
+
+    // show dashboard and update every second
+    const spinner = new LoadingSpinner();
+    spinner.show();
+    await updateDashboard();
+    spinner.hide();
+
+    let interval;
     interval = setInterval(updateDashboard, 1000);
 });
