@@ -129,11 +129,13 @@ router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
     const isHoliday = getIsHoliday(now, settings);
     const isEarningTime = getIsEarningTime(now, settings);
     const workingDaysInMonth = getWorkingDaysInMonth(now, settings);
-    const currentEarnings = getCurrentEarnings(now, settings);
-    const maximumEarnings = workingDaysInMonth * settings.mandayRate;
+    let currentEarnings = getCurrentEarnings(now, settings);
+    let maximumEarnings = workingDaysInMonth * settings.mandayRate;
     const useVAT = settings.vatRate > 0;
-    const currentEarningsWithVAT = useVAT ? getEarningsWithVAT(currentEarnings, settings) : null;
-    const maximumEarningsWithVAT = useVAT ? getEarningsWithVAT(maximumEarnings, settings) : null;
+    if (useVAT) {
+        currentEarnings = getEarningsWithVAT(currentEarnings, settings);
+        maximumEarnings = getEarningsWithVAT(maximumEarnings, settings);
+    }
 
     res.json({
         settings: settings,
@@ -148,10 +150,8 @@ router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
             currentEarnings: currentEarnings,
             maximumEarnings: maximumEarnings,
             useVAT: useVAT,
-            currentEarningsWithVAT: currentEarningsWithVAT,
-            maximumEarningsWithVAT: maximumEarningsWithVAT,
             currency: settings.currency,
-        },
+        }
     });
 });
 
