@@ -57,19 +57,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         const currentEarningsStatusElement = document.getElementById("current-earnings-status");
         const maximumEarningsElement = document.getElementById("maximum-earnings");
         const maximumEarningsVATInfoElement = document.getElementById("maximum-earnings-vat-info");
+        const perDayElement = document.getElementById("per-day");
+        const perHourElement = document.getElementById("per-hour");
+        const perMinuteElement = document.getElementById("per-minute");
+        const growthRateVATInfoElement = document.getElementById("growth-rate-vat-info");
 
         // show current/maximum earnings
         currentEarningsElement.textContent = formatAmount(data.earnings.currentEarnings, data.earnings.currency);
         maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarnings, data.earnings.currency);
+
+        // show growth rate
+        perDayElement.firstChild.textContent = formatAmount(data.earnings.earningsGrowthRate.perDay, data.earnings.currency);
+        perHourElement.firstChild.textContent = formatAmount(data.earnings.earningsGrowthRate.perHour, data.earnings.currency);
+        perMinuteElement.firstChild.textContent = formatAmount(data.earnings.earningsGrowthRate.perMinute, data.earnings.currency);
 
         // show VAT info?
         const useVAT = data.earnings.useVAT;
         if (useVAT) {
             currentEarningsVATInfoElement.style.display = "block";
             maximumEarningsVATInfoElement.style.display = "block";
+            growthRateVATInfoElement.style.display = "block";
         } else {
             currentEarningsVATInfoElement.style.display = "none";
             maximumEarningsVATInfoElement.style.display = "none";
+            growthRateVATInfoElement.style.display = "none";
         }
 
         // is earning time?
