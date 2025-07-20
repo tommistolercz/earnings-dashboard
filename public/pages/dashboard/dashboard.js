@@ -55,11 +55,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         const currentEarningsElement = document.getElementById("current-earnings");
         const currentEarningsVATInfoElement = document.getElementById("current-earnings-vat-info");
         const currentEarningsStatusElement = document.getElementById("current-earnings-status");
-
         const maximumEarningsElement = document.getElementById("maximum-earnings");
         const maximumEarningsVATInfoElement = document.getElementById("maximum-earnings-vat-info");
 
-        // use VAT?
+        // show current/maximum earnings
+        currentEarningsElement.textContent = formatAmount(data.earnings.currentEarnings, data.earnings.currency);
+        maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarnings, data.earnings.currency);
+
+        // show VAT info?
         const useVAT = data.earnings.useVAT;
         if (useVAT) {
             currentEarningsVATInfoElement.style.display = "block";
@@ -73,14 +76,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const isEarningTime = data.calendar.isEarningTime;
         currentEarningsStatusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
         currentEarningsStatusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
-
-        // show current earnings
-        const currentEarnings = useVAT ? data.earnings.currentEarningsWithVAT : data.earnings.currentEarnings;
-        currentEarningsElement.textContent = formatAmount(currentEarnings, data.earnings.currency);
-
-        // show maximum earnings
-        const maximumEarnings = useVAT ? data.earnings.maximumEarningsWithVAT : data.earnings.maximumEarnings;
-        maximumEarningsElement.textContent = formatAmount(maximumEarnings, data.earnings.currency);
     }
 
     // show dashboard and update every second
