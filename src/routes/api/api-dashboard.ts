@@ -103,12 +103,37 @@ export function getCurrentEarnings(now: DateTime, settings: UserSettings): numbe
             earnings += (settings.mandayRate / 8) * workedHours;
         }
     }
-    return Math.floor(earnings);
+    return Math.round(earnings);
+}
+
+// calculates maximum earnings in a month
+export function getMaximumEarnings(now: DateTime, settings: UserSettings): number {
+    const workingDays = getWorkingDaysInMonth(now, settings);
+    const maximumEarnings = workingDays * settings.mandayRate;
+    return Math.round(maximumEarnings);
+}
+
+export type EarningsGrowthRate = {
+    perDay: number;
+    perHour: number;
+    perMinute: number;
+    perSecond: number;
+};
+
+// calculates earnings growth rate
+export function getEarningsGrowthRate(settings: UserSettings): EarningsGrowthRate {
+    const earningsGrowthRate: EarningsGrowthRate = {
+        perDay: settings.mandayRate,
+        perHour: Math.round(settings.mandayRate / 8),
+        perMinute: Math.round(settings.mandayRate / 8 / 60),
+        perSecond: Math.round(settings.mandayRate / 8 / 60 / 60)
+    };
+    return earningsGrowthRate;
 }
 
 // calculates earnings with VAT
 export function getEarningsWithVAT(earnings: number, settings: UserSettings): number {
-    return Math.floor(earnings * (1 + settings.vatRate));
+    return Math.round(earnings * (1 + settings.vatRate));
 }
 
 
@@ -130,11 +155,15 @@ router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
     const isEarningTime = getIsEarningTime(now, settings);
     const workingDaysInMonth = getWorkingDaysInMonth(now, settings);
     let currentEarnings = getCurrentEarnings(now, settings);
-    let maximumEarnings = workingDaysInMonth * settings.mandayRate;
+    let maximumEarnings = getMaximumEarnings(now, settings);
+    let earningsGrowthRate = getEarningsGrowthRate(settings);
     const useVAT = settings.vatRate > 0;
     if (useVAT) {
         currentEarnings = getEarningsWithVAT(currentEarnings, settings);
         maximumEarnings = getEarningsWithVAT(maximumEarnings, settings);
+        earningsGrowthRate = Object.fromEntries(
+            Object.entries(earningsGrowthRate).map(([k, v]) => [k, getEarningsWithVAT(v, settings)])
+        ) as EarningsGrowthRate;
     }
 
     res.json({
@@ -149,6 +178,7 @@ router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
         earnings: {
             currentEarnings: currentEarnings,
             maximumEarnings: maximumEarnings,
+            earningsGrowthRate: earningsGrowthRate,
             useVAT: useVAT,
             currency: settings.currency,
         }

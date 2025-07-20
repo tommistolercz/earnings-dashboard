@@ -38,24 +38,23 @@
 .card h2 {
     font-size: 1.2rem;
     color: var(--color-primary);
-    margin-bottom: 0.5rem;
 }
 
 .card p {
+    margin-top: 0.5rem;
     font-size: 2rem;
     font-weight: bold;
     color: var(--color-accent);
-    margin-bottom: 0.5rem;
 }
 
-.card small {
-    display: block;
+.card .note {
+    margin-top: 0.5rem;
     font-size: 0.8rem;
     color: var(--color-secondary);
-    margin-bottom: 0.8rem;
 }
 
 .card .status {
+    margin-top: 0.8rem;
     border-radius: 6px;
     padding: 0.25rem;
     color: white;
@@ -68,4 +67,18 @@
 
 .card .status.not-earning {
     background-color: var(--color-warn);
+}
+
+.card .growth-rate {
+    margin-top: 0.8rem;
+}
+
+.card .growth-rate p {
+    font-size: 1.2rem;
+    margin-top: 0.2rem;
+}
+
+.card .growth-rate p small {
+    font-size: 0.8rem;
+
 }
