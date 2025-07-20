@@ -39,10 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // update dashboard 
     async function updateDashboard() {
 
-        const currentEarningsElement = document.getElementById("current-earnings");
-        const currentEarningsStatusElement = document.getElementById("current-earnings-status");
-        const maximumEarningsElement = document.getElementById("maximum-earnings");
-
         let data;
         try {
             const res = await fetch("/api/dashboard");
@@ -56,16 +52,36 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // show current earnings
-        currentEarningsElement.textContent = formatAmount(data.earnings.currentEarningsWithVAT, data.earnings.currency);
+        const currentEarningsElement = document.getElementById("current-earnings");
+        const currentEarningsVATInfoElement = document.getElementById("current-earnings-vat-info");
+        const currentEarningsStatusElement = document.getElementById("current-earnings-status");
+
+        const maximumEarningsElement = document.getElementById("maximum-earnings");
+        const maximumEarningsVATInfoElement = document.getElementById("maximum-earnings-vat-info");
+
+        // use VAT?
+        const useVAT = data.earnings.useVAT;
+        if (useVAT) {
+            currentEarningsVATInfoElement.style.display = "block";
+            maximumEarningsVATInfoElement.style.display = "block";
+        } else {
+            currentEarningsVATInfoElement.style.display = "none";
+            maximumEarningsVATInfoElement.style.display = "none";
+        }
+
+        // is earning time?
         const isEarningTime = data.calendar.isEarningTime;
         currentEarningsStatusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
         currentEarningsStatusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
 
-        // show maximum earnings
-        maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarningsWithVAT, data.earnings.currency);
-    }
+        // show current earnings
+        const currentEarnings = useVAT ? data.earnings.currentEarningsWithVAT : data.earnings.currentEarnings;
+        currentEarningsElement.textContent = formatAmount(currentEarnings, data.earnings.currency);
 
+        // show maximum earnings
+        const maximumEarnings = useVAT ? data.earnings.maximumEarningsWithVAT : data.earnings.maximumEarnings;
+        maximumEarningsElement.textContent = formatAmount(maximumEarnings, data.earnings.currency);
+    }
 
     // show dashboard and update every second
     const spinner = new LoadingSpinner();
