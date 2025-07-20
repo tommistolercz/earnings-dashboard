@@ -18,6 +18,8 @@ select {
     margin-top: 0.25rem;
     border: 1px solid #ddd;
     border-radius: 4px;
+    background-color: white;
+    color: var(--color-primary)
 }
 
 select {
@@ -34,7 +36,7 @@ select {
 input::placeholder,
 select::placeholder {
     font-size: 0.8rem;
-    color: #ddd;
+    color: var(--color-secondary);
     opacity: 1;
 }
 
