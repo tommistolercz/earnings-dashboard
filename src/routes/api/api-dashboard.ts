@@ -130,9 +130,10 @@ router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
     const isEarningTime = getIsEarningTime(now, settings);
     const workingDaysInMonth = getWorkingDaysInMonth(now, settings);
     const currentEarnings = getCurrentEarnings(now, settings);
-    const currentEarningsWithVAT = getEarningsWithVAT(currentEarnings, settings);
     const maximumEarnings = workingDaysInMonth * settings.mandayRate;
-    const maximumEarningsWithVAT = getEarningsWithVAT(maximumEarnings, settings);
+    const useVAT = settings.vatRate > 0;
+    const currentEarningsWithVAT = useVAT ? getEarningsWithVAT(currentEarnings, settings) : null;
+    const maximumEarningsWithVAT = useVAT ? getEarningsWithVAT(maximumEarnings, settings) : null;
 
     res.json({
         settings: settings,
@@ -145,8 +146,9 @@ router.get("/api/dashboard", isAuthenticatedApi, async (req, res) => {
         },
         earnings: {
             currentEarnings: currentEarnings,
-            currentEarningsWithVAT: currentEarningsWithVAT,
             maximumEarnings: maximumEarnings,
+            useVAT: useVAT,
+            currentEarningsWithVAT: currentEarningsWithVAT,
             maximumEarningsWithVAT: maximumEarningsWithVAT,
             currency: settings.currency,
         },
