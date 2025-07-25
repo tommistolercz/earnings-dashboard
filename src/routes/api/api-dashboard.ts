@@ -7,6 +7,11 @@ import Holidays from "date-holidays";
 
 const router = express.Router();
 
+// rounds amount to two decimal places
+export function roundAmount(amount: number): number {
+    return parseFloat(amount.toFixed(2));
+}
+
 // returns true if the date is a weekend
 export function getIsWeekend(now: DateTime): boolean {
     const weekday = now.weekday;
@@ -103,14 +108,14 @@ export function getCurrentEarnings(now: DateTime, settings: UserSettings): numbe
             earnings += (settings.mandayRate / 8) * workedHours;
         }
     }
-    return Math.round(earnings);
+    return roundAmount(earnings);
 }
 
 // calculates maximum earnings in a month
 export function getMaximumEarnings(now: DateTime, settings: UserSettings): number {
     const workingDays = getWorkingDaysInMonth(now, settings);
     const maximumEarnings = workingDays * settings.mandayRate;
-    return Math.round(maximumEarnings);
+    return roundAmount(maximumEarnings);
 }
 
 export type EarningsGrowthRate = {
@@ -123,17 +128,17 @@ export type EarningsGrowthRate = {
 // calculates earnings growth rate
 export function getEarningsGrowthRate(settings: UserSettings): EarningsGrowthRate {
     const earningsGrowthRate: EarningsGrowthRate = {
-        perDay: settings.mandayRate,
-        perHour: Math.round(settings.mandayRate / 8),
-        perMinute: Math.round(settings.mandayRate / 8 / 60),
-        perSecond: Math.round(settings.mandayRate / 8 / 60 / 60)
+        perDay: roundAmount(settings.mandayRate),
+        perHour: roundAmount(settings.mandayRate / 8),
+        perMinute: roundAmount(settings.mandayRate / 8 / 60),
+        perSecond: roundAmount(settings.mandayRate / 8 / 60 / 60)
     };
     return earningsGrowthRate;
 }
 
 // calculates earnings with VAT
 export function getEarningsWithVAT(earnings: number, settings: UserSettings): number {
-    return Math.round(earnings * (1 + settings.vatRate));
+    return roundAmount(earnings * (1 + settings.vatRate));
 }
 
 

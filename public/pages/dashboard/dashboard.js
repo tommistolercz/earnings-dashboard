@@ -4,9 +4,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     function formatAmount(amount, currency) {
         amountFormatted = new Intl.NumberFormat("cs-CZ", {
             style: "decimal",
-            maximumFractionDigits: 0
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
         }).format(amount);
-        return `${amountFormatted} ${currency}`;
+
+        const [whole, fraction] = amountFormatted.split(",");
+        return `<span class="whole">${whole},</span><span class="fraction">${fraction}</span> <span class="currency">${currency}</span>`;
     }
 
     // get not-earning time reason
@@ -60,16 +63,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         const perDayElement = document.getElementById("per-day");
         const perHourElement = document.getElementById("per-hour");
         const perMinuteElement = document.getElementById("per-minute");
+        const perSecondElement = document.getElementById("per-second");
         const growthRateVATInfoElement = document.getElementById("growth-rate-vat-info");
 
         // show current/maximum earnings
-        currentEarningsElement.textContent = formatAmount(data.earnings.currentEarnings, data.earnings.currency);
-        maximumEarningsElement.textContent = formatAmount(data.earnings.maximumEarnings, data.earnings.currency);
+        currentEarningsElement.innerHTML = formatAmount(data.earnings.currentEarnings, data.earnings.currency);
+        maximumEarningsElement.innerHTML = formatAmount(data.earnings.maximumEarnings, data.earnings.currency);
 
         // show growth rate
-        perDayElement.firstChild.textContent = formatAmount(data.earnings.earningsGrowthRate.perDay, data.earnings.currency);
-        perHourElement.firstChild.textContent = formatAmount(data.earnings.earningsGrowthRate.perHour, data.earnings.currency);
-        perMinuteElement.firstChild.textContent = formatAmount(data.earnings.earningsGrowthRate.perMinute, data.earnings.currency);
+        perDayElement.innerHTML = formatAmount(data.earnings.earningsGrowthRate.perDay, data.earnings.currency) + ` <span class="per">/day</span>`;
+        perHourElement.innerHTML = formatAmount(data.earnings.earningsGrowthRate.perHour, data.earnings.currency) + ` <span class="per">/hour</span>`;
+        perMinuteElement.innerHTML = formatAmount(data.earnings.earningsGrowthRate.perMinute, data.earnings.currency) + ` <span class="per">/min</span>`;
+        perSecondElement.innerHTML = formatAmount(data.earnings.earningsGrowthRate.perSecond, data.earnings.currency) + ` <span class="per">/sec</span>`;
 
         // show VAT info?
         const useVAT = data.earnings.useVAT;

@@ -15,14 +15,14 @@
 }
 
 .container {
-    padding: 5rem 2rem 2rem;
+    padding: 2rem;
     display: none;
     /* initially hidden until data is loaded */
 }
 
 .card {
-    margin: 2rem;
-    padding: 2rem;
+    margin: 1.5rem;
+    padding: 1.5rem;
     min-width: 300px;
     background-color: #ffffff;
     border-radius: 12px;
@@ -40,11 +40,34 @@
     color: var(--color-primary);
 }
 
-.card p {
+.card .amount {
     margin-top: 0.5rem;
     font-size: 2rem;
     font-weight: bold;
     color: var(--color-accent);
+}
+
+.card .amount .fraction {
+    font-size: 1rem;
+    vertical-align: super;
+}
+
+.card .growth-rate {
+    margin-top: 0.8rem;
+}
+
+.card .growth-rate .amount {
+    margin-top: 0.2rem;
+    font-size: 1.2rem;
+}
+
+.card .growth-rate .amount .fraction {
+    font-size: 0.6rem;
+    vertical-align: super;
+}
+
+.card .growth-rate .amount .per {
+    font-size: 0.6rem;
 }
 
 .card .note {
@@ -67,18 +90,4 @@
 
 .card .status.not-earning {
     background-color: var(--color-warn);
-}
-
-.card .growth-rate {
-    margin-top: 0.8rem;
-}
-
-.card .growth-rate p {
-    font-size: 1.2rem;
-    margin-top: 0.2rem;
-}
-
-.card .growth-rate p small {
-    font-size: 0.8rem;
-
 }

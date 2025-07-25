@@ -167,7 +167,7 @@ describe("getCurrentEarnings()", () => {
             hour: testSettings.workHoursStart + 1,
             minute: 0
         }, { zone: testSettings.timeZone });  // tue 2025-07-01 10:00
-        const expectedEarnings = Math.round(testSettings.mandayRate / 8);
+        const expectedEarnings = apiDashboard.roundAmount(testSettings.mandayRate / 8);
         expect(apiDashboard.getCurrentEarnings(date, testSettings)).toBe(expectedEarnings);
     });
 
@@ -179,7 +179,7 @@ describe("getCurrentEarnings()", () => {
             day: 3,
             hour: testSettings.workHoursStart + 4,
         }, { zone: testSettings.timeZone });  // thu 2025-07-03 13:00
-        const expectedEarnings = Math.round(testSettings.mandayRate * 2.5);
+        const expectedEarnings = apiDashboard.roundAmount(testSettings.mandayRate * 2.5);
         expect(apiDashboard.getCurrentEarnings(date, testSettings)).toBe(expectedEarnings);
     });
 });
@@ -193,7 +193,7 @@ describe("getMaximumEarnings()", () => {
             month: 4,
             day: 1
         }, { zone: testSettings.timeZone });  // apr 2025
-        const expectedEarnings = Math.round(20 * testSettings.mandayRate);
+        const expectedEarnings = apiDashboard.roundAmount(20 * testSettings.mandayRate);
         expect(apiDashboard.getMaximumEarnings(date, testSettings)).toBe(expectedEarnings);
     });
 
@@ -204,7 +204,7 @@ describe("getMaximumEarnings()", () => {
             month: 7,
             day: 1
         }, { zone: testSettings.timeZone });  // jul 2025
-        const expectedEarnings = Math.round(23 * testSettings.mandayRate);
+        const expectedEarnings = apiDashboard.roundAmount(23 * testSettings.mandayRate);
         expect(apiDashboard.getMaximumEarnings(date, testSettings)).toBe(expectedEarnings);
     });
 });
@@ -215,10 +215,10 @@ describe("getEarningsGrowthRate()", () => {
     // earnings growth rate
     it("returns earnings growth rate", () => {
         const expected = {
-            perDay: Math.round(testSettings.mandayRate),
-            perHour: Math.round(testSettings.mandayRate / 8),
-            perMinute: Math.round(testSettings.mandayRate / 8 / 60),
-            perSecond: Math.round(testSettings.mandayRate / 8 / 60 / 60)
+            perDay: apiDashboard.roundAmount(testSettings.mandayRate),
+            perHour: apiDashboard.roundAmount(testSettings.mandayRate / 8),
+            perMinute: apiDashboard.roundAmount(testSettings.mandayRate / 8 / 60),
+            perSecond: apiDashboard.roundAmount(testSettings.mandayRate / 8 / 60 / 60)
         };
         expect(apiDashboard.getEarningsGrowthRate(testSettings)).toEqual(expected);
     });
@@ -230,7 +230,7 @@ describe("getEarningsWithVAT()", () => {
     // earnings with VAT
     it("returns earnings with VAT", () => {
         const earnings = 1000;
-        const expected = Math.round(earnings * (1 + testSettings.vatRate));
+        const expected = apiDashboard.roundAmount(earnings * (1 + testSettings.vatRate));
         expect(apiDashboard.getEarningsWithVAT(earnings, testSettings)).toBe(expected);
     });
 
