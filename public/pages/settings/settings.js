@@ -66,6 +66,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        if (payload.workHoursEnd - payload.workHoursStart != 8) {
+            messageElement.textContent = "Work hours must be 8 hours.";
+            return;
+        }
+
         try {
             const res = await fetch("/api/settings", {
                 method: "POST",
