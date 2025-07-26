@@ -11,8 +11,8 @@ const testSettings: UserSettings = {
     vatRate: 0.21,
     country: "CZ",
     timeZone: "Europe/Prague",
-    workHoursStart: 9,
-    workHoursEnd: 17,
+    workHoursStart: "9:00",
+    workHoursEnd: "17:00",
 };
 
 /* getIsWeekend() */
@@ -78,23 +78,27 @@ describe("getIsEarningTime()", () => {
 
     // work hour
     it("returns true for a work hour", () => {
+        const { hour: startHour, minute: startMinute } = apiDashboard.parseTimeStringToObject(testSettings.workHoursStart);
         const workHour = DateTime.fromObject({
             year: 2025,
             month: 7,
             day: 7,
-            hour: testSettings.workHoursStart
-        }, { zone: testSettings.timeZone });  // mon 2025-07-07 9:00
+            hour: startHour,
+            minute: startMinute
+        }, { zone: testSettings.timeZone });  // mon 2025-07-07, e.g. 9:00
         expect(apiDashboard.getIsEarningTime(workHour, testSettings)).toBe(true);
     });
 
     // outside work hours
     it("returns false for outside work hours", () => {
+        const { hour: endHour, minute: endMinute } = apiDashboard.parseTimeStringToObject(testSettings.workHoursEnd);
         const outsideWorkHours = DateTime.fromObject({
             year: 2025,
             month: 7,
             day: 7,
-            hour: testSettings.workHoursEnd + 1
-        }, { zone: testSettings.timeZone });  // mon 2025-07-07 18:00
+            hour: endHour,
+            minute: endMinute
+        }, { zone: testSettings.timeZone }).plus({ minutes: 1 });  // mon 2025-07-07, e.g. 17:01
         expect(apiDashboard.getIsEarningTime(outsideWorkHours, testSettings)).toBe(false);
     });
 
@@ -148,37 +152,41 @@ describe("getCurrentEarnings()", () => {
 
     // zero earnings 1 minute before working hours in a first working day of the month
     it("returns zero earnings 1 minute before working hours in a first working day of the month", () => {
+        const { hour: startHour, minute: startMinute } = apiDashboard.parseTimeStringToObject(testSettings.workHoursStart);
         const date = DateTime.fromObject({
             year: 2025,
             month: 7,
             day: 1,
-            hour: testSettings.workHoursStart - 1,
-            minute: 59
-        }, { zone: testSettings.timeZone });  // tue 2025-07-01 8:59
+            hour: startHour,
+            minute: startMinute
+        }, { zone: testSettings.timeZone }).minus({ minutes: 1 });  // tue 2025-07-01, e.g. 8:59
         expect(apiDashboard.getCurrentEarnings(date, testSettings)).toBe(0);
     });
 
     // earnings for 1 hour of work in a first working day of the month
     it("returns earnings for 1 hour of work in a first working day of the month", () => {
+        const { hour: startHour, minute: startMinute } = apiDashboard.parseTimeStringToObject(testSettings.workHoursStart);
         const date = DateTime.fromObject({
             year: 2025,
             month: 7,
             day: 1,
-            hour: testSettings.workHoursStart + 1,
-            minute: 0
-        }, { zone: testSettings.timeZone });  // tue 2025-07-01 10:00
+            hour: startHour,
+            minute: startMinute
+        }, { zone: testSettings.timeZone }).plus({ hours: 1 });  // tue 2025-07-01, e.g. 10:00
         const expectedEarnings = apiDashboard.roundAmount(testSettings.mandayRate / 8);
         expect(apiDashboard.getCurrentEarnings(date, testSettings)).toBe(expectedEarnings);
     });
 
     // earnings for two and a half days of work
     it("returns earnings for two and a half days of work", () => {
+        const { hour: startHour, minute: startMinute } = apiDashboard.parseTimeStringToObject(testSettings.workHoursStart);
         const date = DateTime.fromObject({
             year: 2025,
             month: 7,
-            day: 3,
-            hour: testSettings.workHoursStart + 4,
-        }, { zone: testSettings.timeZone });  // thu 2025-07-03 13:00
+            day: 1,
+            hour: startHour,
+            minute: startMinute
+        }, { zone: testSettings.timeZone }).plus({ days: 2, hours: 4 });  // thu 2025-07-03, e.g. 13:00
         const expectedEarnings = apiDashboard.roundAmount(testSettings.mandayRate * 2.5);
         expect(apiDashboard.getCurrentEarnings(date, testSettings)).toBe(expectedEarnings);
     });

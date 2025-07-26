@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "UserSetting" ALTER COLUMN "workHoursStart" SET DATA TYPE TEXT,
+ALTER COLUMN "workHoursEnd" SET DATA TYPE TEXT;

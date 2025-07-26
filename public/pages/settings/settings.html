@@ -40,11 +40,13 @@
             </label>
             <label>
                 Work Hours Start
-                <input type="number" name="workHoursStart" required min="0" max="23" placeholder="example: 9" />
+                <input type="text" name="workHoursStart" required pattern="^(0?[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])?$"
+                    placeholder="example: 9 or 9:30" />
             </label>
             <label>
                 Work Hours End
-                <input type="number" name="workHoursEnd" required min="0" max="23" placeholder="example: 17" />
+                <input type="text" name="workHoursEnd" required pattern="^(0?[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])?$"
+                    placeholder="example: 17 or 17:30" />
             </label>
             <div id="message" class="message"></div>
             <button type="submit">Save Settings</button>
