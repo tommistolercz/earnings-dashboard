@@ -7,9 +7,24 @@ import Holidays from "date-holidays";
 
 const router = express.Router();
 
-// rounds amount to two decimal places
+// rounds an amount to two decimal places
 export function roundAmount(amount: number): number {
     return parseFloat(amount.toFixed(2));
+}
+
+// parses a time string in the format "hh:mm" and returns as a float number (e.g. "9:30" -> 9.5)
+export function parseTimeStringToFloat(str: string): number {
+    const [h, m = "0"] = str.split(":");
+    return parseInt(h, 10) + parseInt(m, 10) / 60;
+}
+
+// parses a time string in the format "hh:mm" and returns as an object
+export function parseTimeStringToObject(str: string): { hour: number, minute: number } {
+    const [h, m = "0"] = str.split(":");
+    return {
+        hour: parseInt(h, 10),
+        minute: parseInt(m, 10)
+    };
 }
 
 // returns true if the date is a weekend
@@ -27,8 +42,10 @@ export function getIsHoliday(now: DateTime, settings: UserSettings): boolean {
 
 // returns true if the current time is within earning hours
 export function getIsEarningTime(now: DateTime, settings: UserSettings): boolean {
-    const hour = now.hour;
-    const isWorkHour = hour >= settings.workHoursStart && hour < settings.workHoursEnd;
+    const current = now.hour + now.minute / 60;
+    const workHourStart = parseTimeStringToFloat(settings.workHoursStart);
+    const workHourEnd = parseTimeStringToFloat(settings.workHoursEnd);
+    const isWorkHour = current >= workHourStart && current < workHourEnd;
     const isWeekend = getIsWeekend(now);
     const isHoliday = getIsHoliday(now, settings);
     return isWorkHour && !isWeekend && !isHoliday;
@@ -57,48 +74,47 @@ export function getCurrentEarnings(now: DateTime, settings: UserSettings): numbe
     const msPerHour = 1000 * 60 * 60;
     const year = now.year;
     const month = now.month;
+    const { hour: startHour, minute: startMinute } = parseTimeStringToObject(settings.workHoursStart);
+    const { hour: endHour, minute: endMinute } = parseTimeStringToObject(settings.workHoursEnd);
     const startOfMonth = DateTime.fromObject({
-        year: year,
-        month: month,
+        year,
+        month,
         day: 1,
-        hour: settings.workHoursStart,
-        minute: 0,
+        hour: startHour,
+        minute: startMinute,
         second: 0
     }, { zone: settings.timeZone });
     const today = DateTime.fromObject({
-        year: year,
-        month: month,
+        year,
+        month,
         day: now.day
     }, { zone: settings.timeZone });
 
-    // calculate earnings for each day of the month until today
+    // earnings for each full day
     let day = startOfMonth;
     while (day < today) {
-        const isWeekend = getIsWeekend(day);
-        const isHoliday = getIsHoliday(day, settings);
-        if (!isWeekend && !isHoliday) {
+        if (!getIsWeekend(day) && !getIsHoliday(day, settings)) {
             earnings += settings.mandayRate;
         }
         day = day.plus({ days: 1 });
     }
-    // for today
-    const isWeekend = getIsWeekend(today);
-    const isHoliday = getIsHoliday(today, settings);
-    if (!isWeekend && !isHoliday) {
+
+    // earnings for today
+    if (!getIsWeekend(today) && !getIsHoliday(today, settings)) {
         const workStart = DateTime.fromObject({
-            year: year,
-            month: month,
+            year,
+            month,
             day: now.day,
-            hour: settings.workHoursStart,
-            minute: 0,
+            hour: startHour,
+            minute: startMinute,
             second: 0
         }, { zone: settings.timeZone });
         const workEnd = DateTime.fromObject({
-            year: year,
-            month: month,
+            year,
+            month,
             day: now.day,
-            hour: settings.workHoursEnd,
-            minute: 0,
+            hour: endHour,
+            minute: endMinute,
             second: 0
         }, { zone: settings.timeZone });
         if (now > workStart) {
@@ -108,6 +124,7 @@ export function getCurrentEarnings(now: DateTime, settings: UserSettings): numbe
             earnings += (settings.mandayRate / 8) * workedHours;
         }
     }
+
     return roundAmount(earnings);
 }
 

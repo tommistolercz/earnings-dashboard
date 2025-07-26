@@ -54,20 +54,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         const payload = {};
 
         for (const [key, value] of formData.entries()) {
-            if (["mandayRate", "vatRate", "workHoursStart", "workHoursEnd"].includes(key)) {
+            if (["mandayRate", "vatRate"].includes(key)) {
                 payload[key] = parseFloat(value);
             } else {
                 payload[key] = value.trim();
             }
         }
 
-        if (payload.workHoursStart > payload.workHoursEnd) {
+        function parseTimeStringToFloat(str) {
+            const [h, m = "0"] = str.split(":");
+            return parseInt(h, 10) + parseInt(m, 10) / 60;
+        }
+
+        const workHoursStart = parseTimeStringToFloat(payload.workHoursStart);
+        const workHoursEnd = parseTimeStringToFloat(payload.workHoursEnd);
+
+        if (workHoursStart >= workHoursEnd) {
             messageElement.textContent = "Work hours start must be before end.";
             return;
         }
 
-        if (payload.workHoursEnd - payload.workHoursStart != 8) {
-            messageElement.textContent = "Work hours must be 8 hours.";
+        if (workHoursEnd - workHoursStart !== 8) {
+            messageElement.textContent = "Work hours must be exactly 8 hours.";
             return;
         }
 

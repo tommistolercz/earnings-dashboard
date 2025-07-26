@@ -31,12 +31,14 @@ const userSettingsSchema = z.object({
         .length(2, "country must be a 2-letter code (e.g. CZ)"),
     timeZone: z.string()
         .min(1, "time zone is required (e.g. Europe/Prague)"),
-    workHoursStart: z.number()
-        .min(0, "work hours start must be a valid hour (e.g. 9)")
-        .max(23, "work hours start must be a valid hour (e.g. 9)"),
-    workHoursEnd: z.number()
-        .min(0, "work hours end must be a valid hour (e.g. 17)")
-        .max(23, "work hours end must be a valid hour (e.g. 17)"),
+    workHoursStart: z.string()
+        .regex(/^(0?[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])?$/, {
+            message: "work hours start must be in format H or H:MM (e.g. 9, 9:30)"
+        }),
+    workHoursEnd: z.string()
+        .regex(/^(0?[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])?$/, {
+            message: "work hours end must be in format H or H:MM (e.g. 17, 17:30)"
+        }),
 });
 export type UserSettings = z.infer<typeof userSettingsSchema>;
 

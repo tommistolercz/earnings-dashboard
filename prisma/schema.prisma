@@ -27,8 +27,8 @@ model UserSetting {
     vatRate        Float
     country        String
     timeZone       String
-    workHoursStart Int
-    workHoursEnd   Int
+    workHoursStart String
+    workHoursEnd   String
 
     user User @relation(fields: [userId], references: [id])
 }
