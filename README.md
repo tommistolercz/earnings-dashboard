@@ -7,7 +7,7 @@
 ## Features
 
 - **Current earnings** – in a current month in real time
-- **Maximum earnings** - in a current month with weekends and holidays taken into account
+- **Maximum earnings** - in a current month respecting weekends and holidays
 - **Growth rate** – earnings per day, hour, minute, second
 - **Settings** – manday rate, currency, VAT rate, country, time zone, work hours
 - **Sign in** - with your Google account
