@@ -12,6 +12,7 @@ import "./auth/google";
 
 import auth from "./routes/auth";
 import home from "./routes/home";
+import features from "./routes/features";
 import dashboard from "./routes/dashboard";
 import settings from "./routes/settings";
 import apiDashboard from "./routes/api/api-dashboard";
@@ -50,6 +51,7 @@ app.use(passport.session());
 // routes
 app.use(auth);
 app.use(home);
+app.use(features);
 app.use(dashboard);
 app.use(settings);
 app.use(apiDashboard);
