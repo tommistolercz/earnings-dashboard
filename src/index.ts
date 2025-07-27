@@ -9,6 +9,7 @@ import { RedisStore } from "connect-redis";
 
 import { redisClient } from "./redis/redis"
 import "./auth/google";
+import { mockLoginMiddleware } from "./middleware/mock-login";
 
 import auth from "./routes/auth";
 import home from "./routes/home";
@@ -17,6 +18,7 @@ import dashboard from "./routes/dashboard";
 import settings from "./routes/settings";
 import apiDashboard from "./routes/api/api-dashboard";
 import apiSettings from "./routes/api/api-settings";
+
 
 // express server
 const app = express();
@@ -28,6 +30,11 @@ app.use("/public", express.static(path.join(__dirname, "../public")));
 // setup for parsing request bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// mock login middleware
+if (process.env.NODE_ENV === "development" && process.env.USE_MOCK_LOGIN === "true") {
+    app.use(mockLoginMiddleware);
+}
 
 // session middleware (store session between requests)
 app.use(session({
