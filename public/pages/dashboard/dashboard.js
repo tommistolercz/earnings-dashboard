@@ -31,11 +31,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         show() {
             this.containerElement.style.display = "none";
-            this.spinnerElement.style.display = "block";
+            this.spinnerElement.style.display = "flex";
         }
         hide() {
             this.spinnerElement.style.display = "none";
-            this.containerElement.style.display = "block";
+            this.containerElement.style.display = "flex";
         }
     }
 
@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const currentEarningsElement = document.getElementById("current-earnings");
         const currentEarningsVATInfoElement = document.getElementById("current-earnings-vat-info");
-        const currentEarningsStatusElement = document.getElementById("current-earnings-status");
         const maximumEarningsElement = document.getElementById("maximum-earnings");
         const maximumEarningsVATInfoElement = document.getElementById("maximum-earnings-vat-info");
         const perDayElement = document.getElementById("per-day");
@@ -65,6 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const perMinuteElement = document.getElementById("per-minute");
         const perSecondElement = document.getElementById("per-second");
         const growthRateVATInfoElement = document.getElementById("growth-rate-vat-info");
+        const earningsStatusElement = document.getElementById("earnings-status");
 
         // show current/maximum earnings
         currentEarningsElement.innerHTML = formatAmount(data.earnings.currentEarnings, data.earnings.currency);
@@ -88,10 +88,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             growthRateVATInfoElement.style.display = "none";
         }
 
-        // is earning time?
+        // earnings status
         const isEarningTime = data.calendar.isEarningTime;
-        currentEarningsStatusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
-        currentEarningsStatusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
+        earningsStatusElement.textContent = isEarningTime ? "It's earning time!" : getNotEarningTimeReason(data);
+        earningsStatusElement.className = "status " + (isEarningTime ? "earning" : "not-earning");
     }
 
     // show dashboard and update every second
