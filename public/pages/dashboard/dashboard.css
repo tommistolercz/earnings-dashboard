@@ -1,3 +1,7 @@
+body {
+    background-color: var(--bg-body-secondary);
+}
+
 .loading-spinner {
     margin: var(--spacing) auto;
     width: 50px;
@@ -22,6 +26,7 @@
     align-items: center;
     padding: calc(var(--spacing) * 2);
     gap: var(--spacing);
+    margin-top: 3rem;
 }
 
 @media (max-width: 768px) {
@@ -33,7 +38,7 @@
 .card {
     min-width: 300px;
     padding: calc(var(--spacing) * 1.5);
-    background-color: white;
+    background-color: var(--bg-body);
     border-radius: var(--radius);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.3s ease;
@@ -45,15 +50,15 @@
 }
 
 .card .title {
-    font-size: 1.2rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--color-primary);
 }
 
 .card .amount {
     margin-top: calc(var(--spacing) / 2);
     font-size: 2rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--color-accent);
 }
 

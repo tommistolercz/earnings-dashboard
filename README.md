@@ -1,8 +1,10 @@
+![Logo](public/images/logo.svg)
+
 # Earnings Dashboard
 
-**"Watching money grow is more fun than just earning it!"**
+**A minimalist web application for freelancers who want to track their earnings in real time.**
 
-**[Earnings Dashboard](https://earnings-dashboard-5vw7.onrender.com/)** is a minimalist web application for freelancers who want to track their earnings in real time.
+**[Start tracking your earnings](https://earnings-dashboard-5vw7.onrender.com/)**
 
 ## Features
 
@@ -16,12 +18,12 @@
 
 ### Tech stack
 
-- Frontend: HTML, CSS, JavaScript
-- Backend: Node.js, Express, TypeScript
-- DB: PostgreSQL, Prisma, Redis
-- API: REST
-- Auth: Google oAuth2
-- Testing: Vitest, Playwright
+- **Frontend** - HTML, CSS, JavaScript
+- **Backend** - Node.js, Express, TypeScript
+- **DB** - PostgreSQL, Prisma, Redis
+- **API** - REST
+- **Auth** - Google oAuth2
+- **Testing** - Vitest, Playwright
 
 ### How to set up local environment
 
