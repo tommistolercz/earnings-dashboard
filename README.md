@@ -4,7 +4,7 @@
 
 **A minimalist web application for freelancers who want to track their earnings in real time.**
 
-**[Start tracking your earnings](https://earnings-dashboard-5vw7.onrender.com/)**
+**[Earnings-dashboard.com](https://earnings-dashboard.com)**
 
 ## Features
 
@@ -48,3 +48,7 @@ brew services start redis
 ### Google auth administration
 
 - [Google Auth Platform](https://console.cloud.google.com/auth/overview?project=earnings-dashboard-465522)
+
+### Domain administration
+
+- [Webglobe](https://admin.webglobe.cz/733794/)
