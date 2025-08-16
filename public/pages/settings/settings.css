@@ -1,11 +1,15 @@
+body {
+    background-color: var(--bg-body-secondary);
+}
+
 .container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-radius: var(--radius);
     background: var(--bg-container);
     padding: calc(var(--spacing) * 2);
+    margin-top: 3rem;
 }
 
 @media (max-width: 768px) {
