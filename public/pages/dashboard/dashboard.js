@@ -27,15 +27,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     class LoadingSpinner {
         constructor() {
             this.spinnerElement = document.getElementById("loading-spinner");
-            this.containerElement = document.getElementById("container");
+            this.contentElement = document.getElementById("loading-content");
         }
         show() {
-            this.containerElement.style.display = "none";
+            this.contentElement.style.display = "none";
             this.spinnerElement.style.display = "flex";
         }
         hide() {
             this.spinnerElement.style.display = "none";
-            this.containerElement.style.display = "flex";
+            this.contentElement.style.display = "flex";
+
         }
     }
 
