@@ -11,47 +11,43 @@
 </head>
 
 <body>
-    <div class="header">
-        <div class="left">
-            <a href="/"><img src="/public/images/logo.svg" alt="Icon" class="icon" /></a>
-        </div>
-        <div class="right">
-            <a href="/settings">Settings</a>
-            <a href="/logout">Sign out</a>
-        </div>
-    </div>
-
     <div id="loading-spinner" class="loading-spinner"></div>
-    <div id="container" class="container">
-
-        <div class="card">
-            <div class="title">Current earnings</div>
-            <div id="current-earnings" class="amount"></div>
-            <div id="current-earnings-vat-info" class="note">*including VAT</div>
-        </div>
-
-        <div class="card">
-            <div class="title">Maximum earnings</div>
-            <div id="maximum-earnings" class="amount"></div>
-            <div id="maximum-earnings-vat-info" class="note">*including VAT</div>
-        </div>
-
-        <div class="card">
-            <div class="title">Growth rate</div>
-            <div class="growth-rate">
-                <div id="per-day" class="amount"></div>
-                <div id="per-hour" class="amount"></div>
-                <div id="per-minute" class="amount"></div>
-                <div id="per-second" class="amount"></div>
+    <div id="loading-content" class="loading-content">
+        <div class="header">
+            <div class="left">
+                <a href="/"><img src="/public/images/logo.svg" alt="Icon" class="icon" /></a>
             </div>
-            <div id="growth-rate-vat-info" class="note">*including VAT</div>
+            <div class="right">
+                <a href="/settings">Settings</a>
+                <a href="/logout">Sign out</a>
+            </div>
         </div>
-
-        <div class="card">
-            <div class="title">Status</div>
-            <div id="earnings-status" class="status"></div>
+        <div class="container">
+            <div class="card">
+                <div class="title">Current earnings</div>
+                <div id="current-earnings" class="amount"></div>
+                <div id="current-earnings-vat-info" class="note">*including VAT</div>
+            </div>
+            <div class="card">
+                <div class="title">Maximum earnings</div>
+                <div id="maximum-earnings" class="amount"></div>
+                <div id="maximum-earnings-vat-info" class="note">*including VAT</div>
+            </div>
+            <div class="card">
+                <div class="title">Growth rate</div>
+                <div class="growth-rate">
+                    <div id="per-day" class="amount"></div>
+                    <div id="per-hour" class="amount"></div>
+                    <div id="per-minute" class="amount"></div>
+                    <div id="per-second" class="amount"></div>
+                </div>
+                <div id="growth-rate-vat-info" class="note">*including VAT</div>
+            </div>
+            <div class="card">
+                <div class="title">Status</div>
+                <div id="earnings-status" class="status"></div>
+            </div>
         </div>
-
     </div>
     <script src="/public/pages/dashboard/dashboard.js"></script>
 </body>

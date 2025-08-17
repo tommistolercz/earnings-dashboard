@@ -3,8 +3,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-radius: var(--radius);
-    background: var(--bg-container);
     padding: calc(var(--spacing) * 2);
 }
 
